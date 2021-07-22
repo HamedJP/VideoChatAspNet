@@ -1,0 +1,4 @@
+.userContainer {
+  display: grid;
+  grid-template-columns: auto 20%;
+}
