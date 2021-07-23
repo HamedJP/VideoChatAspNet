@@ -11,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using VideochatAspNet.Hubs;
+using VideochatAspNet.Models;
 
 namespace VideochatAspNet
 {
@@ -26,8 +28,9 @@ namespace VideochatAspNet
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers();
+            services.AddSignalR();
+            services.AddSingleton<List<User>>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "VideochatAspNet", Version = "v1" });
@@ -45,6 +48,7 @@ namespace VideochatAspNet
             }
 
             app.UseHttpsRedirection();
+            app.UseFileServer();
 
             app.UseRouting();
 
@@ -53,6 +57,7 @@ namespace VideochatAspNet
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<VideChatHub>("/videChatHub");
             });
         }
     }
