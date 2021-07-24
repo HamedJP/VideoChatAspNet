@@ -2,3 +2,26 @@
   display: grid;
   grid-template-columns: auto 20%;
 }
+
+.loginPage {
+  /* background-color: salmon; */
+  width: 320px;
+  height: 220px;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+.loginForm {
+  border: none;
+
+  width: 220px;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
