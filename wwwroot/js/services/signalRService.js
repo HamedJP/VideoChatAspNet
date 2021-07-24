@@ -1,30 +1,46 @@
 "use strict";
 
-import { userService } from "./userService";
+import { userService } from "./userService.js";
 
 var connection = new signalR.HubConnectionBuilder()
   .withUrl("/videChatHub")
   .build();
 await connection
   .start()
-  .then(() => console.log("is it conneted???"))
+  .then(() => {})
   .catch((err) => {
     console.error(err);
   });
-// let response =
-connection.invoke("LoginUser", "Hamed").then((r) => {
-  console.log(r);
-});
 
 export let signalrLib = {
-  loginUser(userName) {
-    connection.invoke("LoginUser", "Hamed").then((user) => {
+  async loginUser(userName) {
+    let result = false;
+    await connection.invoke("LoginUser", userName).then((user) => {
       if (user !== null) {
         userService.currentUser = user;
-        console.log(user);
-        return true;
+        result = true;
       }
     });
-    return false;
+    return result;
   },
+  async getAllUsers() {
+    await connection.invoke("GetAllUsers").then((users) => {
+      userService.allUsers = users;
+      console.log(userService.allUsers);
+    });
+  },
+
+  //-----------------------------------------------------------
+  //              Events
+  //-----------------------------------------------------------
+  onNewUserLogin() {},
 };
+
+//-----------------------------------------------------------
+//                All Invokes
+//-----------------------------------------------------------
+
+connection.on("newUserLogedin", function (newUser) {
+  userService.addNewUser(newUser);
+  signalrLib.onNewUserLogin();
+});

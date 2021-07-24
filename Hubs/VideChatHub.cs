@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using VideochatAspNet.Models;
 
@@ -14,17 +16,27 @@ namespace VideochatAspNet.Hubs
             this.users = users;
         }
 
-        public User LoginUser(string userName){
-            User newUser = new()
+        public override Task OnConnectedAsync()
+        {
+User newUser = new()
             {
                 Id=Guid.NewGuid().ToString(),
-                Name = userName,
                 ConnectionId = Context.ConnectionId
             };
             users.Add(newUser);
+
+            return base.OnConnectedAsync();
+        }
+
+        public User LoginUser(string userName){
+            var user = users.FirstOrDefault(u => u.Id == Context.ConnectionId);
+            user.Name = userName;
             Console.WriteLine($"Welcome {userName}");
             
-            return newUser;
+            return user;
+        }
+        public List<User> GetAllUsers(){
+            return users;
         }
     }
 }
