@@ -10,9 +10,10 @@ app.appendChild(loginPage.div());
 
 loginPage.onLoginUser = () => {
   console.log(`in index page: ${userService.uname}`);
+  if (signalR.signalrLib(userService.uname)) {
+    app.appendChild(sidebar);
+    app.appendChild(chatView);
+  }
 };
-
-// app.appendChild(sidebar);
-// app.appendChild(chatView);
 
 // console.log(app);
