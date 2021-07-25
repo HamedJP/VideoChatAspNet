@@ -66,8 +66,6 @@ function showUsersInsidebarDiv() {
 }
 
 userService.onUserListChanged = () => {
-  console.log("Changing user in sidebar: onUserListChanged");
-  // allUsers = userService.allUsers;
   showUsersInsidebarDiv();
 };
 
