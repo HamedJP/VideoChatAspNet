@@ -19,49 +19,57 @@ usersList.classList =
   "list-group list-group-flush border-bottom scrollarea container";
 
 // let allUsers = [1, 2, 3, 4, 5];
-let allUsers = await userService.allUsers;
-console.log(allUsers);
+// let allUsers = userService.allUsers;
+console.log(userService.allUsers);
 showUsersInsidebarDiv(-1);
 
 function showUsersInsidebarDiv() {
   // console.log(userId);
   usersList.innerHTML = "";
   // selectedUserId = userId;
-  for (let i = 0; i < allUsers.length; i++) {
-    let callButton = document.createElement("button");
-    callButton.textContent = "\u260E";
-    callButton.classList = "btn btn-info";
-    callButton.onclick = () => {
-      console.log(`calling ${allUsers[i].Name}`);
-    };
+  for (let i = 0; i < userService.allUsers.length; i++) {
+    if (userService.allUsers[i].id !== userService.currentUser.id) {
+      let callButton = document.createElement("button");
+      callButton.textContent = "\u260E";
+      callButton.classList = "btn btn-info";
+      callButton.onclick = () => {
+        console.log(`calling ${userService.allUsers[i].name}`);
+      };
 
-    let user = document.createElement("div");
-    user.id = `${allUsers[i].Id}`;
+      let user = document.createElement("div");
+      user.id = `${userService.allUsers[i].id}`;
 
-    let p = document.createElement("p");
-    p.textContent = `user ${allUsers[i].Name}`;
-    p.classList = "col";
-    user.appendChild(p);
-    if (user.id === selectedUserId) {
-      user.classList =
-        "list-group-item list-group-item-action py-3 active lh-tight userContainer";
-      user.appendChild(callButton);
-    } else {
-      user.classList =
-        "list-group-item list-group-item-action py-3 lh-tight userContainer";
-    }
-
-    user.onclick = () => {
-      if (selectedUserId === user.id) {
-        selectedUserId = -1;
+      let p = document.createElement("p");
+      p.textContent = `${userService.allUsers[i].name}`;
+      p.classList = "col";
+      user.appendChild(p);
+      if (user.id === selectedUserId) {
+        user.classList =
+          "list-group-item list-group-item-action py-3 active lh-tight userContainer";
+        user.appendChild(callButton);
       } else {
-        selectedUserId = user.id;
+        user.classList =
+          "list-group-item list-group-item-action py-3 lh-tight userContainer";
       }
-      showUsersInsidebarDiv();
-    };
-    usersList.appendChild(user);
+
+      user.onclick = () => {
+        if (selectedUserId === user.id) {
+          selectedUserId = -1;
+        } else {
+          selectedUserId = user.id;
+        }
+        showUsersInsidebarDiv();
+      };
+      usersList.appendChild(user);
+    }
   }
 }
+
+userService.onUserListChanged = () => {
+  console.log("Changing user in sidebar: onUserListChanged");
+  // allUsers = userService.allUsers;
+  showUsersInsidebarDiv();
+};
 
 sidebarDiv.appendChild(title);
 sidebarDiv.appendChild(usersList);

@@ -25,7 +25,8 @@ export let signalrLib = {
   },
   async getAllUsers() {
     await connection.invoke("GetAllUsers").then((users) => {
-      userService.allUsers = users;
+      // userService.allUsers = users;
+      userService.setAllUsers(users);
       console.log(userService.allUsers);
     });
   },
@@ -33,14 +34,28 @@ export let signalrLib = {
   //-----------------------------------------------------------
   //              Events
   //-----------------------------------------------------------
-  onNewUserLogin() {},
 };
 
 //-----------------------------------------------------------
 //                All Invokes
 //-----------------------------------------------------------
 
-connection.on("newUserLogedin", function (newUser) {
-  userService.addNewUser(newUser);
-  signalrLib.onNewUserLogin();
+connection.on("newUserLogedIn", function (newUser) {
+  console.log("newUserLogedIn");
+  let isNewUser = true;
+  console.log(newUser);
+  userService.allUsers.forEach((u) => {
+    if (u.id === newUser.id) {
+      console.log("user is updating");
+      isNewUser = false;
+      u.Name = newUser.Name;
+    }
+  });
+  if (isNewUser === true) userService.addNewUser(newUser);
+});
+
+connection.on("userLeft", function (newUser) {
+  console.log("userLeft");
+  console.log(newUser);
+  userService.removeUser(newUser);
 });

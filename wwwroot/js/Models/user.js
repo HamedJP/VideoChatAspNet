@@ -1,6 +1,6 @@
 export class User {
-  Id;
-  Name;
-  ConnectionId;
-  WebRTCId;
+  id;
+  name;
+  connectionId;
+  webRTCId;
 }
