@@ -7,7 +7,11 @@ import { userService } from "./services/userService.js";
 
 let app = document.getElementById("App");
 
-app.appendChild(loginPage.div());
+let rootDiv = document.createElement("div");
+rootDiv.className = "row";
+app.appendChild(rootDiv);
+
+rootDiv.appendChild(loginPage.div());
 
 loginPage.onLoginUser = async () => {
   console.log(`in index page: ${userService.uname}`);
@@ -15,9 +19,9 @@ loginPage.onLoginUser = async () => {
   console.log(isLogin);
   if (isLogin) {
     signalrLib.getAllUsers();
-    app.innerHTML = "";
-    app.appendChild(sidebar.div);
-    app.appendChild(chatView);
+    rootDiv.innerHTML = "";
+    rootDiv.appendChild(sidebar.div);
+    rootDiv.appendChild(chatView);
   }
 };
 

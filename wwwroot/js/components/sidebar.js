@@ -4,9 +4,9 @@ let selectedUserId = -1;
 
 let sidebarDiv = document.createElement("div");
 
-sidebarDiv.className =
-  "col d-flex flex-column align-items-stretch flex-shrink-0 bg-white";
-sidebarDiv.style = "background:yellow";
+sidebarDiv.className = "col d-none d-md-block";
+// sidebarDiv.className = "col-sm d-flex flex-column align-items-stretch flex-shrink-0 bg-white";
+// sidebarDiv.style = "background:yellow";
 
 let title = document.createElement("h2");
 title.textContent = "لیست کابران";
