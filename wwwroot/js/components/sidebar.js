@@ -29,38 +29,31 @@ function showUsersInsidebarDiv() {
   // selectedUserId = userId;
   for (let i = 0; i < userService.allUsers.length; i++) {
     if (userService.allUsers[i].id !== userService.currentUser.id) {
-      let callButton = document.createElement("button");
-      callButton.textContent = "\u260E";
-      callButton.classList = "btn btn-info";
-      callButton.onclick = () => {
-        console.log(`calling ${userService.allUsers[i].name}`);
-      };
-
-      let user = document.createElement("div");
-      user.id = `${userService.allUsers[i].id}`;
+      let userDiv = document.createElement("div");
+      userDiv.id = `${userService.allUsers[i].id}`;
 
       let p = document.createElement("p");
       p.textContent = `${userService.allUsers[i].name}`;
       p.classList = "col";
-      user.appendChild(p);
-      if (user.id === selectedUserId) {
-        user.classList =
+      userDiv.appendChild(p);
+      if (userDiv.id === selectedUserId) {
+        userDiv.classList =
           "list-group-item list-group-item-action py-3 active lh-tight userContainer";
-        user.appendChild(callButton);
+        // userDiv.appendChild(callButton);
       } else {
-        user.classList =
+        userDiv.classList =
           "list-group-item list-group-item-action py-3 lh-tight userContainer";
       }
 
-      user.onclick = () => {
-        if (selectedUserId === user.id) {
-          selectedUserId = -1;
+      userDiv.onclick = () => {
+        if (selectedUserId === userDiv.id) {
+          selectedUserId = userService.selectUserToCall(-1);
         } else {
-          selectedUserId = user.id;
+          selectedUserId = userService.selectUserToCall(userDiv.id);
         }
         showUsersInsidebarDiv();
       };
-      usersList.appendChild(user);
+      usersList.appendChild(userDiv);
     }
   }
 }

@@ -1,9 +1,9 @@
 import { User } from "../Models/user.js";
 
 export let userService = {
-  uname: "",
+  selectedUserToCall: User,
   currentUser: User,
-  allUsers: [],
+  allUsers: [User],
   setAllUsers(users) {
     this.allUsers = users;
     this.onUserListChanged();
@@ -26,4 +26,18 @@ export let userService = {
   onUserListChanged() {
     console.log("Changing users in userService!");
   },
+  selectUserToCall(id) {
+    this.selectedUserToCall = null;
+    let sId = -1;
+    this.allUsers.forEach((u) => {
+      if (u.id === id) {
+        this.selectedUserToCall = u;
+        this.onUserSelectedToCall();
+        sId = u.id;
+      }
+    });
+    return sId;
+  },
+
+  onUserSelectedToCall() {},
 };
