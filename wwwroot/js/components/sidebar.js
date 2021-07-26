@@ -4,7 +4,8 @@ let selectedUserId = -1;
 
 let sidebarDiv = document.createElement("div");
 
-sidebarDiv.className = "col d-none d-md-block";
+sidebarDiv.className = "col";
+// sidebarDiv.className = "col d-none d-md-block";
 // sidebarDiv.className = "col-sm d-flex flex-column align-items-stretch flex-shrink-0 bg-white";
 // sidebarDiv.style = "background:yellow";
 
@@ -18,15 +19,11 @@ let usersList = document.createElement("div");
 usersList.classList =
   "list-group list-group-flush border-bottom scrollarea container";
 
-// let allUsers = [1, 2, 3, 4, 5];
-// let allUsers = userService.allUsers;
 console.log(userService.allUsers);
 showUsersInsidebarDiv(-1);
 
 function showUsersInsidebarDiv() {
-  // console.log(userId);
   usersList.innerHTML = "";
-  // selectedUserId = userId;
   for (let i = 0; i < userService.allUsers.length; i++) {
     if (userService.allUsers[i].id !== userService.currentUser.id) {
       let userDiv = document.createElement("div");
@@ -39,7 +36,6 @@ function showUsersInsidebarDiv() {
       if (userDiv.id === selectedUserId) {
         userDiv.classList =
           "list-group-item list-group-item-action py-3 active lh-tight userContainer";
-        // userDiv.appendChild(callButton);
       } else {
         userDiv.classList =
           "list-group-item list-group-item-action py-3 lh-tight userContainer";
@@ -47,6 +43,7 @@ function showUsersInsidebarDiv() {
 
       userDiv.onclick = () => {
         if (selectedUserId === userDiv.id) {
+          console.log("inn sidebar: userService.selectUserToCall(-1)");
           selectedUserId = userService.selectUserToCall(-1);
         } else {
           selectedUserId = userService.selectUserToCall(userDiv.id);

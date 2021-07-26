@@ -30,6 +30,14 @@ export let signalrLib = {
       console.log(userService.allUsers);
     });
   },
+  sendOfferToServer() {
+    connection.invoke(
+      "RecieveOfferFromClient",
+      callerUserId,
+      recieverUserId,
+      offer
+    );
+  },
 
   //-----------------------------------------------------------
   //              Events
@@ -58,4 +66,8 @@ connection.on("userLeft", function (newUser) {
   console.log("userLeft");
   console.log(newUser);
   userService.removeUser(newUser);
+});
+
+connection.on("recieveOfferFromServer", function (callerUserId, recieverUserId, offer) {
+  
 });

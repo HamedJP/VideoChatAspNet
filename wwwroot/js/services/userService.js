@@ -32,10 +32,10 @@ export let userService = {
     this.allUsers.forEach((u) => {
       if (u.id === id) {
         this.selectedUserToCall = u;
-        this.onUserSelectedToCall();
         sId = u.id;
       }
     });
+    this.onUserSelectedToCall();
     return sId;
   },
 
