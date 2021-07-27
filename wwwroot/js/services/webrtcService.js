@@ -2,9 +2,11 @@ const localConnection = new RTCPeerConnection();
 
 localConnection.onicecandidate = (e) => {
   console.log(" NEW ice candidnat!! on localconnection reprinting SDP ");
-  webRtcLib.offer = JSON.stringify(localConnection.localDescription);
+  webRtcLib.localConnectionDescription = JSON.stringify(
+    localConnection.localDescription
+  );
+  // webRtcLib.offer = JSON.stringify(localConnection.localDescription);
   webRtcLib.onOfferIsReady();
-  console.log(webRtcLib.offer);
 };
 
 const sendChannel = localConnection.createDataChannel("sendChannel");
@@ -13,7 +15,6 @@ sendChannel.onopen = (e) => console.log("open!!!!");
 sendChannel.onclose = (e) => console.log("closed!!!!!!");
 
 localConnection.ondatachannel = (e) => {
-  console.log("on datachannel creation!\nanswer was created");
   //   const receiveChannel = e.channel;
   //   receiveChannel.onmessage = (e) =>
   //     console.log("messsage received!!!" + e.data);
@@ -30,22 +31,24 @@ localConnection
 export let webRtcLib = {
   offer: String,
   answer: String,
-
-  recieveOffer(offer) {
-    this.offer = offer;
+  localConnectionDescription: String,
+  async recieveOffer(offer) {
+    console.log(offer);
+    this.offer = JSON.parse(offer);
+    console.log(this.offer);
     localConnection
-      .setRemoteDescription(offer)
+      .setRemoteDescription(this.offer)
       .then((a) => console.log("done"));
-    await remoteConnection
+    await localConnection
       .createAnswer()
-      .then((a) => remoteConnection.setLocalDescription(a))
+      .then((a) => localConnection.setLocalDescription(a))
       .then((a) => {
-        this.answer = JSON.stringify(remoteConnection.localDescription);
+        this.answer = JSON.stringify(localConnection.localDescription);
         console.log(this.answer);
-        this.onAnswerIsReady();
       });
+    this.newIncomingVideoCall();
   },
 
   onOfferIsReady() {},
-  onAnswerIsReady() {},
+  newIncomingVideoCall() {},
 };

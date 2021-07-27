@@ -1,6 +1,7 @@
 "use strict";
 
 import { userService } from "./userService.js";
+import { webRtcLib } from "./webrtcService.js";
 
 var connection = new signalR.HubConnectionBuilder()
   .withUrl("/videChatHub")
@@ -31,11 +32,13 @@ export let signalrLib = {
     });
   },
   sendOfferToServer() {
+    console.log(`sendong offer to server:`);
+    console.log(webRtcLib.localConnectionDescription);
     connection.invoke(
       "RecieveOfferFromClient",
-      callerUserId,
-      recieverUserId,
-      offer
+      userService.currentUser.id,
+      userService.selectedUserToCall.id,
+      webRtcLib.localConnectionDescription
     );
   },
 
@@ -68,6 +71,11 @@ connection.on("userLeft", function (newUser) {
   userService.removeUser(newUser);
 });
 
-connection.on("recieveOfferFromServer", function (callerUserId, recieverUserId, offer) {
-  
-});
+connection.on(
+  "recieveOfferFromServer",
+  function (callerUserId, recieverUserId, offer) {
+    userService.setCallerUser(callerUserId);
+    userService.setRecieverUser(recieverUserId);
+    webRtcLib.recieveOffer(offer);
+  }
+);

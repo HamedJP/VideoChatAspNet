@@ -47,6 +47,8 @@ namespace VideochatAspNet.Hubs
             return users;
         }
         public bool RecieveOfferFromClient(string callerUserId,string recieverUserId,string offer){
+            Console.WriteLine($"Sending offer to reciever: {offer}");
+            
             var callerUser = users.FirstOrDefault(u => u.Id == callerUserId);
             var recieverUser = users.FirstOrDefault(u => u.Id == recieverUserId);
             if(callerUser==null || recieverUser==null)return false;

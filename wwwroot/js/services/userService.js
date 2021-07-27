@@ -3,6 +3,10 @@ import { User } from "../Models/user.js";
 export let userService = {
   selectedUserToCall: User,
   currentUser: User,
+
+  callerUser: User,
+  recieverUser: User,
+
   allUsers: [User],
   setAllUsers(users) {
     this.allUsers = users;
@@ -23,9 +27,6 @@ export let userService = {
     }
     this.onUserListChanged();
   },
-  onUserListChanged() {
-    console.log("Changing users in userService!");
-  },
   selectUserToCall(id) {
     this.selectedUserToCall = null;
     let sId = -1;
@@ -38,6 +39,26 @@ export let userService = {
     this.onUserSelectedToCall();
     return sId;
   },
+  setCallerUser(callerUserId) {
+    this.allUsers.forEach((u) => {
+      if (u.id === callerUserId) {
+        this.callerUser = u;
+      }
+    });
+  },
+  setRecieverUser(recieverUserId) {
+    this.allUsers.forEach((u) => {
+      if (u.id === recieverUserId) {
+        this.callerUser = u;
+      }
+    });
+  },
 
+  //----------------------------------------------------------------
+  //                    Events
+  //----------------------------------------------------------------
+  onUserListChanged() {
+    console.log("Changing users in userService!");
+  },
   onUserSelectedToCall() {},
 };

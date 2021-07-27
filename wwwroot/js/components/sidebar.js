@@ -43,7 +43,7 @@ function showUsersInsidebarDiv() {
 
       userDiv.onclick = () => {
         if (selectedUserId === userDiv.id) {
-          console.log("inn sidebar: userService.selectUserToCall(-1)");
+          console.log("in sidebar: userService.selectUserToCall(-1)");
           selectedUserId = userService.selectUserToCall(-1);
         } else {
           selectedUserId = userService.selectUserToCall(userDiv.id);

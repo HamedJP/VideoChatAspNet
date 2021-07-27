@@ -1,6 +1,8 @@
 import { User } from "../Models/user.js";
+import { incomingVideoCallModal } from "./incomingVideoCall.js";
 import { userService } from "../services/userService.js";
 import { webRtcLib } from "../services/webrtcService.js";
+import { signalrLib } from "../services/signalRService.js";
 
 export let chatView = document.createElement("div");
 chatView.classList = "col";
@@ -13,6 +15,12 @@ videoCallButton.disabled = true;
 videoCallButton.classList = "btn btn-info";
 videoCallButton.onclick = () => {
   console.log(`calling ${userService.selectedUserToCall.name}`);
+  // signalrLib.sendOfferToServer();
+  let mdal = new bootstrap.Modal(incomingVideoCallModal.div);
+  mdal.show();
+  console.log("-------------------------------------------------------");
+  console.log(mdal);
+  console.log("-------------------------------------------------------");
 };
 
 userService.onUserSelectedToCall = () => {
@@ -20,6 +28,7 @@ userService.onUserSelectedToCall = () => {
 };
 
 chatView.appendChild(videoCallButton);
+chatView.appendChild(incomingVideoCallModal.div);
 
 userService.onUserSelectedToCall = () => {
   if (userService.selectedUserToCall === null) {
