@@ -56,5 +56,19 @@ namespace VideochatAspNet.Hubs
                    .SendAsync("recieveOfferFromServer", callerUserId, recieverUserId, offer);
             return true;
         }
+
+        public bool RecieveAnswerFromClient(string callerUserId, string recieverUserId, string answer)
+        {
+            
+            var callerUser = users.FirstOrDefault(u => u.Id == callerUserId);
+            var recieverUser = users.FirstOrDefault(u => u.Id == recieverUserId);
+            if(callerUser==null || recieverUser==null)return false;
+            Console.WriteLine($"Sending answer to reciever: {answer}");
+
+            Clients.Client(callerUser.ConnectionId)
+                   .SendAsync("recieveAnswerFromServer", callerUserId, recieverUserId, answer);
+            
+            return true;
+        }
     }
 }

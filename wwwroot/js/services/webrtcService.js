@@ -1,7 +1,9 @@
+import { userService } from "./userService.js";
+
 const localConnection = new RTCPeerConnection();
 
 localConnection.onicecandidate = (e) => {
-  console.log(" NEW ice candidnat!! on localconnection reprinting SDP ");
+  // console.log(" NEW ice candidnat!! on localconnection reprinting SDP ");
   webRtcLib.localConnectionDescription = JSON.stringify(
     localConnection.localDescription
   );
@@ -15,12 +17,12 @@ sendChannel.onopen = (e) => console.log("open!!!!");
 sendChannel.onclose = (e) => console.log("closed!!!!!!");
 
 localConnection.ondatachannel = (e) => {
-  //   const receiveChannel = e.channel;
-  //   receiveChannel.onmessage = (e) =>
-  //     console.log("messsage received!!!" + e.data);
-  //   receiveChannel.onopen = (e) => console.log("open!!!!");
-  //   receiveChannel.onclose = (e) => console.log("closed!!!!!!");
-  //   sendChannel = receiveChannel;
+  // const receiveChannel = e.channel;
+  // receiveChannel.onmessage = (e) =>
+  //   console.log("messsage received!!!" + e.data);
+  // receiveChannel.onopen = (e) => console.log("open!!!!");
+  // receiveChannel.onclose = (e) => console.log("closed!!!!!!");
+  // sendChannel = receiveChannel;
   sendChannel = e.channel;
 };
 
@@ -31,9 +33,11 @@ localConnection
 export let webRtcLib = {
   offer: String,
   answer: String,
+  isAnswerReady: false,
   localConnectionDescription: String,
   async recieveOffer(offer) {
-    console.log(offer);
+    this.isAnswerReady = false;
+    // console.log(`Recieve offer from server`);
     this.offer = JSON.parse(offer);
     console.log(this.offer);
     localConnection
@@ -44,11 +48,25 @@ export let webRtcLib = {
       .then((a) => localConnection.setLocalDescription(a))
       .then((a) => {
         this.answer = JSON.stringify(localConnection.localDescription);
-        console.log(this.answer);
+        // console.log(this.answer);
+        this.isAnswerReady = true;
       });
-    this.newIncomingVideoCall();
+    this.onNewIncomingVideoCall();
+  },
+
+  async recieveAnswer(answer) {
+    console.log(`Answer recieved`);
+    await localConnection
+      .setRemoteDescription(answer)
+      .then((a) => console.log("done"));
+  },
+
+  sendTestMessage() {
+    sendChannel.send(
+      `Hello from ${userService.currentUser.name} to ${userService.callerUser.name} TO ${userService.recieverUser.name}`
+    );
   },
 
   onOfferIsReady() {},
-  newIncomingVideoCall() {},
+  onNewIncomingVideoCall() {},
 };

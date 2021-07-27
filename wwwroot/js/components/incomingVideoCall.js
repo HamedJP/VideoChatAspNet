@@ -1,3 +1,5 @@
+import { signalrLib } from "../services/signalRService.js";
+
 let mBody = document.createElement("div");
 mBody.className = "modal-body";
 mBody.textContent = "BODY";
@@ -6,6 +8,10 @@ let acceptButton = document.createElement("button");
 acceptButton.classList = "btn btn-success";
 acceptButton.textContent = "Answer";
 acceptButton.setAttribute("data-bs-dismiss", "modal");
+acceptButton.onclick = () => {
+  console.log(`accepting the call`);
+  signalrLib.sendAnswerToServer();
+};
 
 let rejectButton = document.createElement("button");
 rejectButton.classList = "btn btn-danger";

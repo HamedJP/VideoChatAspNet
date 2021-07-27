@@ -41,6 +41,16 @@ export let signalrLib = {
       webRtcLib.localConnectionDescription
     );
   },
+  sendAnswerToServer() {
+    console.log(`sending answer to server:`);
+    console.log(webRtcLib.answer);
+    connection.invoke(
+      "RecieveAnswerFromClient",
+      userService.callerUser.id,
+      userService.recieverUser.id,
+      webRtcLib.answer
+    );
+  },
 
   //-----------------------------------------------------------
   //              Events
@@ -77,5 +87,13 @@ connection.on(
     userService.setCallerUser(callerUserId);
     userService.setRecieverUser(recieverUserId);
     webRtcLib.recieveOffer(offer);
+  }
+);
+
+connection.on(
+  "recieveAnswerFromServer",
+  function (callerUserId, recieverUserId, answer) {
+    console.log(`answer is recieved in signalR`);
+    webRtcLib.recieveAnswer(answer);
   }
 );

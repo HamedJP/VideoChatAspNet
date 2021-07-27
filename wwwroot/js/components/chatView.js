@@ -15,20 +15,25 @@ videoCallButton.disabled = true;
 videoCallButton.classList = "btn btn-info";
 videoCallButton.onclick = () => {
   console.log(`calling ${userService.selectedUserToCall.name}`);
-  // signalrLib.sendOfferToServer();
-  let mdal = new bootstrap.Modal(incomingVideoCallModal.div);
-  mdal.show();
-  console.log("-------------------------------------------------------");
-  console.log(mdal);
-  console.log("-------------------------------------------------------");
+  userService.callerUser = userService.currentUser;
+  userService.recieverUser = userService.selectedUserToCall;
+  signalrLib.sendOfferToServer();
+};
+
+let test = document.createElement("button");
+test.textContent = "hello";
+test.classList = "btn btn-info";
+test.onclick = () => {
+  webRtcLib.sendTestMessage();
 };
 
 userService.onUserSelectedToCall = () => {
-  console.log(`lets call ${userService.selectedUserToCall.name}`);
+  // console.log(`lets call ${userService.selectedUserToCall.name}`);
 };
 
 chatView.appendChild(videoCallButton);
 chatView.appendChild(incomingVideoCallModal.div);
+chatView.appendChild(test);
 
 userService.onUserSelectedToCall = () => {
   if (userService.selectedUserToCall === null) {
@@ -39,5 +44,9 @@ userService.onUserSelectedToCall = () => {
 };
 
 webRtcLib.onOfferIsReady = () => {
-  console.log("Offer is ready");
+  // console.log("Offer is ready");
+};
+webRtcLib.onNewIncomingVideoCall = () => {
+  let mdal = new bootstrap.Modal(incomingVideoCallModal.div);
+  mdal.show();
 };
