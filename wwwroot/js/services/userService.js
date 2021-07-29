@@ -49,7 +49,7 @@ export let userService = {
   setRecieverUser(recieverUserId) {
     this.allUsers.forEach((u) => {
       if (u.id === recieverUserId) {
-        this.callerUser = u;
+        this.recieverUser = u;
       }
     });
   },

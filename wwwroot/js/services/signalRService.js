@@ -33,7 +33,6 @@ export let signalrLib = {
   },
   sendOfferToServer() {
     console.log(`sendong offer to server:`);
-    console.log(webRtcLib.localConnectionDescription);
     connection.invoke(
       "RecieveOfferFromClient",
       userService.currentUser.id,
@@ -43,7 +42,6 @@ export let signalrLib = {
   },
   sendAnswerToServer() {
     console.log(`sending answer to server:`);
-    console.log(webRtcLib.answer);
     connection.invoke(
       "RecieveAnswerFromClient",
       userService.callerUser.id,
@@ -62,12 +60,9 @@ export let signalrLib = {
 //-----------------------------------------------------------
 
 connection.on("newUserLogedIn", function (newUser) {
-  console.log("newUserLogedIn");
   let isNewUser = true;
-  console.log(newUser);
   userService.allUsers.forEach((u) => {
     if (u.id === newUser.id) {
-      console.log("user is updating");
       isNewUser = false;
       u.Name = newUser.Name;
     }
@@ -76,8 +71,6 @@ connection.on("newUserLogedIn", function (newUser) {
 });
 
 connection.on("userLeft", function (newUser) {
-  console.log("userLeft");
-  console.log(newUser);
   userService.removeUser(newUser);
 });
 

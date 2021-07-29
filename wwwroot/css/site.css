@@ -25,3 +25,28 @@
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
 }
+.callButton {
+  background-color: red;
+  position: absolute;
+  z-index: 1;
+}
+
+.guessViewArea {
+  z-index: 0;
+  background-color: blue;
+  position: absolute;
+}
+
+.selfViewArea {
+  border-width: 3px;
+  border-style: solid;
+  width: 120px;
+  height: 120px;
+  border-radius: 60px;
+  border-color: rgb(0, 0, 0);
+  background-color: red;
+  position: relative;
+  z-index: 2;
+  bottom: 60;
+  left: 53px;
+}

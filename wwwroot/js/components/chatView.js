@@ -6,13 +6,15 @@ import { signalrLib } from "../services/signalRService.js";
 
 export let chatView = document.createElement("div");
 chatView.classList = "col";
-chatView.style = "background:orange";
+// chatView.style = "background:orange;position: absolute;";
+chatView.style = "background:orange;";
 
 let videoCallButton = document.createElement("button");
 // videoCallButton.textContent = "\u260E";
 videoCallButton.textContent = "📷";
 videoCallButton.disabled = true;
-videoCallButton.classList = "btn btn-info";
+// videoCallButton.classList = "btn btn-info";
+videoCallButton.classList = "callButton";
 videoCallButton.onclick = () => {
   console.log(`calling ${userService.selectedUserToCall.name}`);
   userService.callerUser = userService.currentUser;
@@ -20,12 +22,15 @@ videoCallButton.onclick = () => {
   signalrLib.sendOfferToServer();
 };
 
-let test = document.createElement("button");
-test.textContent = "hello";
-test.classList = "btn btn-info";
-test.onclick = () => {
-  webRtcLib.sendTestMessage();
-};
+let guessViewArea = document.createElement("video");
+guessViewArea.classList = "guessViewArea";
+
+let selfViewArea = document.createElement("video");
+selfViewArea.textContent = "hello";
+selfViewArea.classList = "selfViewArea";
+// selfViewArea.onclick = () => {
+//   webRtcLib.sendTestMessage();
+// };
 
 userService.onUserSelectedToCall = () => {
   // console.log(`lets call ${userService.selectedUserToCall.name}`);
@@ -33,7 +38,8 @@ userService.onUserSelectedToCall = () => {
 
 chatView.appendChild(videoCallButton);
 chatView.appendChild(incomingVideoCallModal.div);
-chatView.appendChild(test);
+chatView.appendChild(guessViewArea);
+chatView.appendChild(selfViewArea);
 
 userService.onUserSelectedToCall = () => {
   if (userService.selectedUserToCall === null) {

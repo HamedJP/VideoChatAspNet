@@ -11,7 +11,7 @@ localConnection.onicecandidate = (e) => {
   webRtcLib.onOfferIsReady();
 };
 
-const sendChannel = localConnection.createDataChannel("sendChannel");
+let sendChannel = localConnection.createDataChannel("sendChannel");
 sendChannel.onmessage = (e) => console.log("messsage received!!!" + e.data);
 sendChannel.onopen = (e) => console.log("open!!!!");
 sendChannel.onclose = (e) => console.log("closed!!!!!!");
@@ -39,7 +39,6 @@ export let webRtcLib = {
     this.isAnswerReady = false;
     // console.log(`Recieve offer from server`);
     this.offer = JSON.parse(offer);
-    console.log(this.offer);
     localConnection
       .setRemoteDescription(this.offer)
       .then((a) => console.log("done"));
@@ -55,9 +54,10 @@ export let webRtcLib = {
   },
 
   async recieveAnswer(answer) {
+    let jAnswer = JSON.parse(answer);
     console.log(`Answer recieved`);
     await localConnection
-      .setRemoteDescription(answer)
+      .setRemoteDescription(jAnswer)
       .then((a) => console.log("done"));
   },
 
