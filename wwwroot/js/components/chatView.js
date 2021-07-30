@@ -28,9 +28,24 @@ guessViewArea.classList = "guessViewArea";
 let selfViewArea = document.createElement("video");
 selfViewArea.textContent = "hello";
 selfViewArea.classList = "selfViewArea";
+webRtcLib.onSelfVideoIsReady = () => {
+  selfViewArea.srcObject = webRtcLib.seflVideoStream;
+  selfViewArea.play();
+};
 // selfViewArea.onclick = () => {
 //   webRtcLib.sendTestMessage();
 // };
+
+//-----------------------------------------------------------
+let tmp = await navigator.mediaDevices.enumerateDevices();
+console.log(tmp);
+// let cam1 = navigator.mediaDevices
+//   .getUserMedia({ video: true, audio: false })
+//   .then((v) => {
+//     selfViewArea.srcObject = v;
+//     selfViewArea.play();
+//   });
+//-----------------------------------------------------------
 
 userService.onUserSelectedToCall = () => {
   // console.log(`lets call ${userService.selectedUserToCall.name}`);

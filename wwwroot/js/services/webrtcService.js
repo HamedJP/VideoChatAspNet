@@ -3,11 +3,9 @@ import { userService } from "./userService.js";
 const localConnection = new RTCPeerConnection();
 
 localConnection.onicecandidate = (e) => {
-  // console.log(" NEW ice candidnat!! on localconnection reprinting SDP ");
   webRtcLib.localConnectionDescription = JSON.stringify(
     localConnection.localDescription
   );
-  // webRtcLib.offer = JSON.stringify(localConnection.localDescription);
   webRtcLib.onOfferIsReady();
 };
 
@@ -15,14 +13,7 @@ let sendChannel = localConnection.createDataChannel("sendChannel");
 sendChannel.onmessage = (e) => console.log("messsage received!!!" + e.data);
 sendChannel.onopen = (e) => console.log("open!!!!");
 sendChannel.onclose = (e) => console.log("closed!!!!!!");
-
-localConnection.ondatachannel = (e) => {
-  // const receiveChannel = e.channel;
-  // receiveChannel.onmessage = (e) =>
-  //   console.log("messsage received!!!" + e.data);
-  // receiveChannel.onopen = (e) => console.log("open!!!!");
-  // receiveChannel.onclose = (e) => console.log("closed!!!!!!");
-  // sendChannel = receiveChannel;
+sendChannel.localConnection.ondatachannel = (e) => {
   sendChannel = e.channel;
 };
 
@@ -30,11 +21,20 @@ localConnection
   .createOffer()
   .then((o) => localConnection.setLocalDescription(o));
 
+navigator.mediaDevices
+  .getUserMedia({ video: true, audio: false })
+  .then((stream) => {
+    webRtcLib.seflVideoStream = stream;
+    webRtcLib.onSelfVideoIsReady();
+  });
+
 export let webRtcLib = {
   offer: String,
   answer: String,
   isAnswerReady: false,
   localConnectionDescription: String,
+  seflVideoStream: MediaStream,
+  incomingVideoSteam: MediaStream,
   async recieveOffer(offer) {
     this.isAnswerReady = false;
     // console.log(`Recieve offer from server`);
@@ -47,7 +47,6 @@ export let webRtcLib = {
       .then((a) => localConnection.setLocalDescription(a))
       .then((a) => {
         this.answer = JSON.stringify(localConnection.localDescription);
-        // console.log(this.answer);
         this.isAnswerReady = true;
       });
     this.onNewIncomingVideoCall();
@@ -69,4 +68,5 @@ export let webRtcLib = {
 
   onOfferIsReady() {},
   onNewIncomingVideoCall() {},
+  onSelfVideoIsReady() {},
 };
