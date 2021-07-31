@@ -3,17 +3,27 @@ import { userService } from "./userService.js";
 const localConnection = new RTCPeerConnection();
 
 localConnection.onicecandidate = (e) => {
+  console.log(`on new ICE candidate!`);
   webRtcLib.localConnectionDescription = JSON.stringify(
     localConnection.localDescription
   );
   webRtcLib.onOfferIsReady();
 };
+localConnection.ontrack = (e) => {
+  console.log("Recieving new track");
+  console.log(e);
+  webRtcLib.incomingVideoSteam = e.streams[0];
+  webRtcLib.onStreamIncomingVideo();
+};
 
 let sendChannel = localConnection.createDataChannel("sendChannel");
 sendChannel.onmessage = (e) => console.log("messsage received!!!" + e.data);
-sendChannel.onopen = (e) => console.log("open!!!!");
+sendChannel.onopen = (e) => {
+  console.log("open!!!!");
+};
 sendChannel.onclose = (e) => console.log("closed!!!!!!");
-sendChannel.localConnection.ondatachannel = (e) => {
+localConnection.ondatachannel = (e) => {
+  // console.log(`on data channel event`);
   sendChannel = e.channel;
 };
 
@@ -35,29 +45,31 @@ export let webRtcLib = {
   localConnectionDescription: String,
   seflVideoStream: MediaStream,
   incomingVideoSteam: MediaStream,
-  async recieveOffer(offer) {
+  recieveOffer(offer) {
     this.isAnswerReady = false;
-    // console.log(`Recieve offer from server`);
+    console.log(`Recieve offer from server`);
+    console.log(offer);
     this.offer = JSON.parse(offer);
     localConnection
       .setRemoteDescription(this.offer)
       .then((a) => console.log("done"));
-    await localConnection
+    localConnection
       .createAnswer()
       .then((a) => localConnection.setLocalDescription(a))
       .then((a) => {
         this.answer = JSON.stringify(localConnection.localDescription);
         this.isAnswerReady = true;
+        this.onNewIncomingVideoCall();
       });
-    this.onNewIncomingVideoCall();
   },
 
   async recieveAnswer(answer) {
     let jAnswer = JSON.parse(answer);
     console.log(`Answer recieved`);
-    await localConnection
-      .setRemoteDescription(jAnswer)
-      .then((a) => console.log("done"));
+    await localConnection.setRemoteDescription(jAnswer);
+    // await a1.
+    // console.log(a1);
+    // .then((a) => console.log("done"));
   },
 
   sendTestMessage() {
@@ -69,4 +81,5 @@ export let webRtcLib = {
   onOfferIsReady() {},
   onNewIncomingVideoCall() {},
   onSelfVideoIsReady() {},
+  onStreamIncomingVideo() {},
 };

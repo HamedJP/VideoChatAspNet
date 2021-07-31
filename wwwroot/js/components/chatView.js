@@ -24,6 +24,9 @@ videoCallButton.onclick = () => {
 
 let guessViewArea = document.createElement("video");
 guessViewArea.classList = "guessViewArea";
+webRtcLib.onStreamIncomingVideo = () => {
+  guessViewArea.srcObject = webRtcLib.incomingVideoSteam;
+};
 
 let selfViewArea = document.createElement("video");
 selfViewArea.textContent = "hello";
@@ -32,9 +35,10 @@ webRtcLib.onSelfVideoIsReady = () => {
   selfViewArea.srcObject = webRtcLib.seflVideoStream;
   selfViewArea.play();
 };
-// selfViewArea.onclick = () => {
-//   webRtcLib.sendTestMessage();
-// };
+selfViewArea.onclick = () => {
+  console.log(`sending message?`);
+  webRtcLib.sendTestMessage();
+};
 
 //-----------------------------------------------------------
 let tmp = await navigator.mediaDevices.enumerateDevices();
