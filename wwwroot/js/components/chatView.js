@@ -22,6 +22,12 @@ videoCallButton.onclick = () => {
   signalrLib.sendOfferToServer();
 };
 
+let changeCameraButton = document.createElement("button");
+changeCameraButton.textContent = "🗘";
+changeCameraButton.onclick = () => {
+  webRtcLib.itirateCameras();
+};
+
 let guessViewArea = document.createElement("video");
 guessViewArea.classList = "guessViewArea";
 webRtcLib.onStreamIncomingVideo = () => {
@@ -41,8 +47,7 @@ selfViewArea.onclick = () => {
 };
 
 //-----------------------------------------------------------
-let tmp = await navigator.mediaDevices.enumerateDevices();
-console.log(tmp);
+
 // let cam1 = navigator.mediaDevices
 //   .getUserMedia({ video: true, audio: false })
 //   .then((v) => {
@@ -56,6 +61,7 @@ userService.onUserSelectedToCall = () => {
 };
 
 chatView.appendChild(videoCallButton);
+chatView.appendChild(changeCameraButton);
 chatView.appendChild(incomingVideoCallModal.div);
 chatView.appendChild(guessViewArea);
 chatView.appendChild(selfViewArea);
