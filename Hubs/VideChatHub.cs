@@ -70,5 +70,13 @@ namespace VideochatAspNet.Hubs
             
             return true;
         }
+
+        public void NewIcecandidates(string recieverUserId, string newIcecandidates){
+            var recieverUser = users.FirstOrDefault(u => u.Id == recieverUserId);
+            if(recieverUser!=null){
+                Clients.Client(recieverUser.ConnectionId)
+                .SendAsync("reciveNewIceCandidate", newIcecandidates);
+            }
+        }
     }
 }
