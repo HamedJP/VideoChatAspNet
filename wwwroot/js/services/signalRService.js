@@ -31,8 +31,9 @@ export let signalrLib = {
       console.log(userService.allUsers);
     });
   },
-  sendOfferToServer() {
+  async sendOfferToServer() {
     console.log(`sendong offer to server:`);
+    // await webRtcLib.createOffer();
     connection.invoke(
       "RecieveOfferFromClient",
       userService.currentUser.id,
@@ -47,6 +48,14 @@ export let signalrLib = {
       userService.callerUser.id,
       userService.recieverUser.id,
       webRtcLib.answer
+    );
+  },
+
+  sendNewIceToServer(iceCandidate) {
+    connection.invoke(
+      "NewIcecandidates",
+      userService.otherUser.id,
+      iceCandidate
     );
   },
 
@@ -79,6 +88,7 @@ connection.on(
   function (callerUserId, recieverUserId, offer) {
     userService.setCallerUser(callerUserId);
     userService.setRecieverUser(recieverUserId);
+    userService.otherUser = userService.callerUser;
     webRtcLib.recieveOffer(offer);
   }
 );
@@ -90,3 +100,7 @@ connection.on(
     webRtcLib.recieveAnswer(answer);
   }
 );
+
+connection.on("reciveNewIceCandidate", function (newRemoteIceCandidate) {
+  webRtcLib.setNewRemoteIceCandidate(newRemoteIceCandidate);
+});

@@ -6,6 +6,7 @@ export let userService = {
 
   callerUser: User,
   recieverUser: User,
+  otherUser: User,
 
   allUsers: [User],
   setAllUsers(users) {

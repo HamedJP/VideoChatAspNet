@@ -1,6 +1,11 @@
+import { signalrLib } from "./signalRService.js";
 import { userService } from "./userService.js";
 
-const localConnection = new RTCPeerConnection();
+let localConnection; //= new RTCPeerConnection();
+var configuration = {
+  offerToReceiveAudio: true,
+  offerToReceiveVideo: true,
+};
 let devices = await navigator.mediaDevices.enumerateDevices();
 console.log(devices);
 
@@ -9,36 +14,42 @@ devices.forEach((d) => {
   if (d.kind === "videoinput") cameras.push(d);
 });
 
-console.log(cameras);
+// console.log(cameras);
+async function initialLocalConnection() {
+  localConnection.onicecandidate = (e) => {
+    console.log(`on new ICE candidate!`);
+    webRtcLib.localConnectionDescription = JSON.stringify(
+      localConnection.localDescription
+    );
+    // webRtcLib.onOfferIsReady();
+    signalrLib.sendNewIceToServer(JSON.stringify(e.candidate));
+  };
+  localConnection.ontrack = (e) => {
+    console.log("Recieving new track");
+    console.log(e.streams[0]);
+    console.log(webRtcLib.seflVideoStream);
+    webRtcLib.incomingVideoSteam = webRtcLib.seflVideoStream;
+    // webRtcLib.incomingVideoSteam = e.streams[0];
+    // webRtcLib.onStreamIncomingVideo();
+  };
+  webRtcLib.seflVideoStream.getTracks().forEach(function (track) {
+    localConnection.addTrack(track, webRtcLib.seflVideoStream);
+  });
 
-localConnection.onicecandidate = (e) => {
-  console.log(`on new ICE candidate!`);
-  webRtcLib.localConnectionDescription = JSON.stringify(
-    localConnection.localDescription
-  );
-  webRtcLib.onOfferIsReady();
-};
-localConnection.ontrack = (e) => {
-  console.log("Recieving new track");
-  console.log(e);
-  webRtcLib.incomingVideoSteam = e.streams[0];
-  webRtcLib.onStreamIncomingVideo();
-};
-
-let sendChannel = localConnection.createDataChannel("sendChannel");
-sendChannel.onmessage = (e) => console.log("messsage received!!!" + e.data);
-sendChannel.onopen = (e) => {
-  console.log("open!!!!");
-};
-sendChannel.onclose = (e) => console.log("closed!!!!!!");
-localConnection.ondatachannel = (e) => {
-  // console.log(`on data channel event`);
-  sendChannel = e.channel;
-};
-
-localConnection
-  .createOffer()
-  .then((o) => localConnection.setLocalDescription(o));
+  let sendChannel = localConnection.createDataChannel("sendChannel");
+  sendChannel.onmessage = (e) => console.log("messsage received!!!" + e.data);
+  sendChannel.onopen = (e) => {
+    console.log("open!!!!");
+  };
+  sendChannel.onclose = (e) => console.log("closed!!!!!!");
+  localConnection.ondatachannel = (e) => {
+    // console.log(`on data channel event`);
+    sendChannel = e.channel;
+  };
+}
+// localConnection
+//   .createOffer()
+//   .then((o) => localConnection.setLocalDescription(o));
 
 export let webRtcLib = {
   offer: String,
@@ -47,7 +58,34 @@ export let webRtcLib = {
   localConnectionDescription: String,
   seflVideoStream: MediaStream,
   incomingVideoSteam: MediaStream,
+
+  async createOffer() {
+    localConnection = new RTCPeerConnection({
+      configuration: configuration,
+      iceServers: [
+        {
+          urls: "stun:stunserver.example.org",
+        },
+      ],
+    });
+
+    await initialLocalConnection();
+    console.log(localConnection);
+    localConnection
+      .createOffer()
+      .then((o) => localConnection.setLocalDescription(o))
+      .then((a) => {
+        this.localConnectionDescription = JSON.stringify(
+          localConnection.localDescription
+        );
+        signalrLib.sendOfferToServer();
+      });
+  },
+
   recieveOffer(offer) {
+    localConnection = new RTCPeerConnection(configuration);
+    initialLocalConnection();
+
     this.isAnswerReady = false;
     console.log(`Recieve offer from server`);
     console.log(offer);
@@ -73,6 +111,10 @@ export let webRtcLib = {
       console.log(`done in answer`);
       console.log(e);
     });
+  },
+  setNewRemoteIceCandidate(newRemoteIceCandidate) {
+    newRemoteIceCandidate = JSON.parse(newRemoteIceCandidate);
+    localConnection.addIceCandidate(newRemoteIceCandidate);
   },
 
   sendTestMessage() {

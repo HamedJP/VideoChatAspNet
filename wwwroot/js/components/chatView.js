@@ -19,7 +19,9 @@ videoCallButton.onclick = () => {
   console.log(`calling ${userService.selectedUserToCall.name}`);
   userService.callerUser = userService.currentUser;
   userService.recieverUser = userService.selectedUserToCall;
-  signalrLib.sendOfferToServer();
+  userService.otherUser = userService.selectedUserToCall;
+  // signalrLib.sendOfferToServer();
+  webRtcLib.createOffer();
 };
 
 let changeCameraButton = document.createElement("button");
@@ -31,14 +33,16 @@ changeCameraButton.onclick = () => {
 let guessViewArea = document.createElement("video");
 guessViewArea.classList = "guessViewArea";
 webRtcLib.onStreamIncomingVideo = () => {
-  guessViewArea.srcObject = webRtcLib.incomingVideoSteam;
+  guessViewArea.srcObject = webRtcLib.seflVideoStream;
+  guessViewArea.play();
 };
 
 let selfViewArea = document.createElement("video");
 selfViewArea.textContent = "hello";
 selfViewArea.classList = "selfViewArea";
 webRtcLib.onSelfVideoIsReady = () => {
-  selfViewArea.srcObject = webRtcLib.seflVideoStream;
+  selfViewArea.srcObject = webRtcLib.incomingVideoSteam;
+  // selfViewArea.srcObject = webRtcLib.seflVideoStream;
   selfViewArea.play();
 };
 selfViewArea.onclick = () => {
