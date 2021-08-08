@@ -41,8 +41,8 @@ let selfViewArea = document.createElement("video");
 selfViewArea.textContent = "hello";
 selfViewArea.classList = "selfViewArea";
 webRtcLib.onSelfVideoIsReady = () => {
-  selfViewArea.srcObject = webRtcLib.incomingVideoSteam;
-  // selfViewArea.srcObject = webRtcLib.seflVideoStream;
+  // selfViewArea.srcObject = webRtcLib.incomingVideoSteam;
+  selfViewArea.srcObject = webRtcLib.seflVideoStream;
   selfViewArea.play();
 };
 selfViewArea.onclick = () => {
@@ -84,4 +84,8 @@ webRtcLib.onOfferIsReady = () => {
 webRtcLib.onNewIncomingVideoCall = () => {
   let mdal = new bootstrap.Modal(incomingVideoCallModal.div);
   mdal.show();
+};
+webRtcLib.onStreamIncomingVideo = () => {
+  console.log(`stream the incoming video`);
+  guessViewArea.srcObject = webRtcLib.incomingVideoSteam;
 };

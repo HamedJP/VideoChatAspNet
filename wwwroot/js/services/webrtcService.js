@@ -1,3 +1,4 @@
+import { chatView } from "../components/chatView.js";
 import { signalrLib } from "./signalRService.js";
 import { userService } from "./userService.js";
 
@@ -28,9 +29,11 @@ async function initialLocalConnection() {
     console.log("Recieving new track");
     console.log(e.streams[0]);
     console.log(webRtcLib.seflVideoStream);
-    webRtcLib.incomingVideoSteam = webRtcLib.seflVideoStream;
-    // webRtcLib.incomingVideoSteam = e.streams[0];
+    // webRtcLib.incomingVideoSteam = webRtcLib.seflVideoStream;
     // webRtcLib.onStreamIncomingVideo();
+    // chatView.guessViewArea.srcObject = webRtcLib.incomingVideoSteam;
+    webRtcLib.incomingVideoSteam = e.streams[0];
+    webRtcLib.onStreamIncomingVideo();
   };
   webRtcLib.seflVideoStream.getTracks().forEach(function (track) {
     localConnection.addTrack(track, webRtcLib.seflVideoStream);
@@ -83,7 +86,14 @@ export let webRtcLib = {
   },
 
   recieveOffer(offer) {
-    localConnection = new RTCPeerConnection(configuration);
+    localConnection = new RTCPeerConnection({
+      configuration: configuration,
+      iceServers: [
+        {
+          urls: "stun:stunserver.example.org",
+        },
+      ],
+    });
     initialLocalConnection();
 
     this.isAnswerReady = false;
