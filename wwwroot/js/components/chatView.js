@@ -33,7 +33,8 @@ changeCameraButton.onclick = () => {
 let guessViewArea = document.createElement("video");
 guessViewArea.classList = "guessViewArea";
 webRtcLib.onStreamIncomingVideo = () => {
-  guessViewArea.srcObject = webRtcLib.seflVideoStream;
+  console.log(`on recieving the income stream`);
+  guessViewArea.srcObject = webRtcLib.incomingVideoSteam;
   guessViewArea.play();
 };
 
@@ -41,7 +42,6 @@ let selfViewArea = document.createElement("video");
 selfViewArea.textContent = "hello";
 selfViewArea.classList = "selfViewArea";
 webRtcLib.onSelfVideoIsReady = () => {
-  // selfViewArea.srcObject = webRtcLib.incomingVideoSteam;
   selfViewArea.srcObject = webRtcLib.seflVideoStream;
   selfViewArea.play();
 };
@@ -85,7 +85,7 @@ webRtcLib.onNewIncomingVideoCall = () => {
   let mdal = new bootstrap.Modal(incomingVideoCallModal.div);
   mdal.show();
 };
-webRtcLib.onStreamIncomingVideo = () => {
-  console.log(`stream the incoming video`);
-  guessViewArea.srcObject = webRtcLib.incomingVideoSteam;
-};
+// webRtcLib.onStreamIncomingVideo = () => {
+//   console.log(`stream the incoming video`);
+//   guessViewArea.srcObject = webRtcLib.incomingVideoSteam;
+// };
