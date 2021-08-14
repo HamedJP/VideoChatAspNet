@@ -11,36 +11,56 @@ let rootDiv = document.createElement("div");
 rootDiv.className = "row";
 app.appendChild(rootDiv);
 
-rootDiv.appendChild(loginPage.div());
-
-window.addEventListener("popstate", (e) => {
-  if (e.state.id === "login") {
-    signalrLib.logOutUser();
-    rootDiv.innerHTML = "";
-    rootDiv.appendChild(loginPage.div());
-  }
-  // else if (userService.currentUser)
-});
-
-// loginPage.onLoginUser = async () => {
-//   console.log(`in index page: ${userService.uname}`);
-//   isLogin = await signalrLib.loginUser(userService.uname);
-//   // console.log(isLogin);
-//   if (isLogin) {
-//     signalrLib.getAllUsers();
-//     rootDiv.innerHTML = "";
-//     rootDiv.appendChild(sidebar.div);
-//     history.pushState({ id: "chatoom" }, `Selected: Chatroom`, `./room`);
-//     // rootDiv.appendChild(chatView);
-//   }
-// };
-
-userService.onUserLogin = () => {
+function showLoginPage() {
+  rootDiv.innerHTML = "";
+  rootDiv.appendChild(loginPage.div());
+}
+function showUsersList() {
   signalrLib.getAllUsers();
   rootDiv.innerHTML = "";
   rootDiv.appendChild(sidebar.div);
-  history.pushState({ id: "chatoom" }, `Selected: Chatroom`, `./room`);
+}
+
+window.addEventListener("popstate", (e) => {
+  switch (e.state.page) {
+    case "login":
+      showLoginPage();
+      break;
+    case "usersList":
+      if (userService.currentUser === null) {
+        showLoginPage();
+        break;
+      }
+      showUsersList();
+      break;
+    case "chatPage":
+      if (userService.currentUser === null) {
+        showLoginPage();
+        break;
+      }
+      rootDiv.innerHTML = "";
+      rootDiv.appendChild(chatView);
+      break;
+    default:
+      break;
+  }
+});
+
+userService.onUserLogin = () => {
+  showUsersList();
+  history.pushState({ page: "usersList" }, `Selected: Chatroom`, `./room`);
 };
 
-history.replaceState({ id: "login" }, "Default state", "./");
+userService.onUserSelectedToCall = () => {
+  rootDiv.innerHTML = "";
+  rootDiv.appendChild(chatView);
+  history.pushState(
+    { page: "chatPage" },
+    `Selected: Chatroom`,
+    `./chat/${userService.selectedUserToCall.name}`
+  );
+};
+
+showLoginPage();
+history.replaceState({ page: "login" }, "Default state", "./");
 // console.log(app);

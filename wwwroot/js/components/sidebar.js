@@ -42,6 +42,8 @@ function showUsersInsidebarDiv() {
       }
 
       userDiv.onclick = () => {
+        // going to chat view:
+
         if (selectedUserId === userDiv.id) {
           console.log("in sidebar: userService.selectUserToCall(-1)");
           selectedUserId = userService.selectUserToCall(-1);

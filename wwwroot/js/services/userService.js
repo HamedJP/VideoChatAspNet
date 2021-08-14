@@ -59,6 +59,10 @@ export let userService = {
     this.currentUser = await signalrLib.loginUser(username);
     if (this.currentUser !== null) this.onUserLogin();
   },
+  async logoutUser() {
+    this.currentUser = null;
+    await signalrLib.logOutUser();
+  },
   //----------------------------------------------------------------
   //                    Events
   //----------------------------------------------------------------
