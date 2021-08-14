@@ -1,4 +1,5 @@
 import { User } from "../Models/user.js";
+import { signalrLib } from "./signalRService.js";
 
 export let userService = {
   selectedUserToCall: User,
@@ -54,7 +55,10 @@ export let userService = {
       }
     });
   },
-
+  async loginUser(username) {
+    this.currentUser = await signalrLib.loginUser(username);
+    if (this.currentUser !== null) this.onUserLogin();
+  },
   //----------------------------------------------------------------
   //                    Events
   //----------------------------------------------------------------
@@ -62,4 +66,5 @@ export let userService = {
     console.log("Changing users in userService!");
   },
   onUserSelectedToCall() {},
+  onUserLogin() {},
 };

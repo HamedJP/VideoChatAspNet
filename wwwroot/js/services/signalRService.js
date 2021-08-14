@@ -15,14 +15,17 @@ await connection
 
 export let signalrLib = {
   async loginUser(userName) {
-    let result = false;
+    let result = null;
     await connection.invoke("LoginUser", userName).then((user) => {
       if (user !== null) {
-        userService.currentUser = user;
-        result = true;
+        // userService.currentUser = user;
+        result = user;
       }
     });
     return result;
+  },
+  async logOutUser() {
+    await connection.invoke("LogoutUser");
   },
   async getAllUsers() {
     await connection.invoke("GetAllUsers").then((users) => {

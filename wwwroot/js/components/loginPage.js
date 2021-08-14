@@ -34,8 +34,9 @@ rootDiv.appendChild(form);
 form.onsubmit = () => {
   event.preventDefault();
   if (userIput.value !== "") {
-    userService.uname = userIput.value;
-    loginPage.onLoginUser();
+    // userService.uname = userIput.value;
+    // loginPage.onLoginUser();
+    userService.loginUser(userIput.value);
   } else {
     userIput.placeholder = "لطفا یک نام کاربری وارد کنید";
     userIput.style = "color:red";

@@ -6,23 +6,41 @@ import { loginPage } from "./components/loginPage.js";
 import { userService } from "./services/userService.js";
 
 let app = document.getElementById("App");
-
+let isLogin;
 let rootDiv = document.createElement("div");
 rootDiv.className = "row";
 app.appendChild(rootDiv);
 
 rootDiv.appendChild(loginPage.div());
 
-loginPage.onLoginUser = async () => {
-  console.log(`in index page: ${userService.uname}`);
-  let isLogin = await signalrLib.loginUser(userService.uname);
-  console.log(isLogin);
-  if (isLogin) {
-    signalrLib.getAllUsers();
+window.addEventListener("popstate", (e) => {
+  if (e.state.id === "login") {
+    signalrLib.logOutUser();
     rootDiv.innerHTML = "";
-    rootDiv.appendChild(sidebar.div);
-    rootDiv.appendChild(chatView);
+    rootDiv.appendChild(loginPage.div());
   }
+  // else if (userService.currentUser)
+});
+
+// loginPage.onLoginUser = async () => {
+//   console.log(`in index page: ${userService.uname}`);
+//   isLogin = await signalrLib.loginUser(userService.uname);
+//   // console.log(isLogin);
+//   if (isLogin) {
+//     signalrLib.getAllUsers();
+//     rootDiv.innerHTML = "";
+//     rootDiv.appendChild(sidebar.div);
+//     history.pushState({ id: "chatoom" }, `Selected: Chatroom`, `./room`);
+//     // rootDiv.appendChild(chatView);
+//   }
+// };
+
+userService.onUserLogin = () => {
+  signalrLib.getAllUsers();
+  rootDiv.innerHTML = "";
+  rootDiv.appendChild(sidebar.div);
+  history.pushState({ id: "chatoom" }, `Selected: Chatroom`, `./room`);
 };
 
+history.replaceState({ id: "login" }, "Default state", "./");
 // console.log(app);

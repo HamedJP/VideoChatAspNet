@@ -20,7 +20,7 @@ namespace VideochatAspNet.Hubs
         {
             User newUser = new()
             {
-                Id=Guid.NewGuid().ToString(),
+                // Id=Guid.NewGuid().ToString(),
                 ConnectionId = Context.ConnectionId
             };
             users.Add(newUser);
@@ -38,10 +38,17 @@ namespace VideochatAspNet.Hubs
 
         public User LoginUser(string userName){
             var user = users.FirstOrDefault(u => u.ConnectionId == Context.ConnectionId);
+            user.Id = Guid.NewGuid().ToString();
             user.Name = userName;
             Console.WriteLine($"Welcome {userName}");
             Clients.Others.SendAsync("newUserLogedIn", user);
             return user;
+        }
+
+        public void LogoutUser(){
+
+            var user = users.FirstOrDefault(u => u.ConnectionId == Context.ConnectionId);
+            Clients.Others.SendAsync("userLeft", user);
         }
         public List<User> GetAllUsers(){
             return users;
