@@ -11,6 +11,7 @@ acceptButton.setAttribute("data-bs-dismiss", "modal");
 acceptButton.onclick = () => {
   console.log(`accepting the call`);
   signalrLib.sendAnswerToServer();
+  incomingVideoCallModal.onAcceptCall();
 };
 
 let rejectButton = document.createElement("button");
@@ -43,4 +44,5 @@ root.appendChild(modalDialog);
 
 export let incomingVideoCallModal = {
   div: root,
+  onAcceptCall() {},
 };

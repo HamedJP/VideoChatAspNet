@@ -12,8 +12,8 @@ chatView.style = "background:orange;";
 let videoCallButton = document.createElement("button");
 // videoCallButton.textContent = "\u260E";
 videoCallButton.textContent = "📷";
-videoCallButton.disabled = true;
-// videoCallButton.classList = "btn btn-info";
+// videoCallButton.disabled = true;
+videoCallButton.classList = "callVideoButton";
 videoCallButton.classList = "callButton";
 videoCallButton.onclick = () => {
   console.log(`calling ${userService.selectedUserToCall.name}`);
@@ -50,41 +50,23 @@ selfViewArea.onclick = () => {
   webRtcLib.sendTestMessage();
 };
 
-//-----------------------------------------------------------
-
-// let cam1 = navigator.mediaDevices
-//   .getUserMedia({ video: true, audio: false })
-//   .then((v) => {
-//     selfViewArea.srcObject = v;
-//     selfViewArea.play();
-//   });
-//-----------------------------------------------------------
-
-userService.onUserSelectedToCall = () => {
-  // console.log(`lets call ${userService.selectedUserToCall.name}`);
-};
-
 chatView.appendChild(videoCallButton);
 chatView.appendChild(changeCameraButton);
-chatView.appendChild(incomingVideoCallModal.div);
+// chatView.appendChild(incomingVideoCallModal.div);
 chatView.appendChild(guessViewArea);
 chatView.appendChild(selfViewArea);
 
 userService.onUserSelectedToCall = () => {
-  if (userService.selectedUserToCall === null) {
-    videoCallButton.disabled = true;
-  } else {
-    videoCallButton.disabled = false;
-  }
+  // if (userService.selectedUserToCall === null) {
+  //   videoCallButton.disabled = true;
+  // } else {
+  //   videoCallButton.disabled = false;
+  // }
 };
 
-webRtcLib.onOfferIsReady = () => {
-  // console.log("Offer is ready");
-};
-webRtcLib.onNewIncomingVideoCall = () => {
-  let mdal = new bootstrap.Modal(incomingVideoCallModal.div);
-  mdal.show();
-};
+// webRtcLib.onOfferIsReady = () => {
+// console.log("Offer is ready");
+// };
 // webRtcLib.onStreamIncomingVideo = () => {
 //   console.log(`stream the incoming video`);
 //   guessViewArea.srcObject = webRtcLib.incomingVideoSteam;

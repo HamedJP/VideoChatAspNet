@@ -2,6 +2,120 @@
   display: grid;
   grid-template-columns: auto 20%;
 }
+.userContainer {
+  display: grid;
+  grid-template-columns: auto 20%;
+}
+
+.loginPage {
+  /* background-color: salmon; */
+  width: 320px;
+  height: 220px;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+.loginForm {
+  border: none;
+
+  width: 220px;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+.callButton {
+  /* background-color: none; */
+  position: absolute;
+  z-index: 1;
+  background: none;
+  background-image: url("../images/VideoCall.svg");
+  border: none;
+  background-size: cover;
+}
+
+.guessViewArea {
+  z-index: 0;
+  background-color: blue;
+  position: absolute;
+  /* left: 0; */
+  /* width: 100vw; */
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+
+  margin: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.selfViewArea {
+  border-width: 3px;
+  border-style: solid;
+  width: 120px;
+  height: 120px;
+  border-radius: 60px;
+  border-color: red;
+  background-color: red;
+  position: absolute;
+  z-index: 2;
+  top: 5%;
+  left: 5%;
+  object-fit: cover;
+}
+
+.rotateCameraButton {
+  z-index: 2;
+  bottom: 260;
+  left: 53px;
+  position: absolute;
+  margin: 0;
+  bottom: 5%;
+  left: 20%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  width: 14vw;
+  height: 14vw;
+  border-radius: 7vw;
+  border: none;
+  background: none;
+  background-image: url("../images/cameraRotate.png");
+  background-size: cover;
+}
+.rotateCameraButton:active {
+  bottom: 6%;
+  width: 12vw;
+  height: 12vw;
+  filter: invert(70%);
+}
+
+.endCallButton {
+  position: absolute;
+  margin: 0;
+  bottom: 0%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  width: 20vw;
+  height: 20vw;
+  border-radius: 10vw;
+  border: none;
+  background-image: url("../images/endCall.svg");
+  background-size: cover;
+}
+.endCallButton:active {
+  bottom: 2%;
+  width: 16vw;
+  height: 16vw;
+  border-radius: 8vw;
+  filter: grayscale(70%);
+}
 
 .loginPage {
   /* background-color: salmon; */
@@ -49,4 +163,8 @@
   z-index: 2;
   bottom: 60;
   left: 53px;
+}
+
+.callVideoButton {
+  background-image: url("../images/VideoCall.svg");
 }

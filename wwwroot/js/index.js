@@ -4,6 +4,8 @@ import { chatView } from "./components/chatView.js";
 import { signalrLib } from "./services/signalRService.js";
 import { loginPage } from "./components/loginPage.js";
 import { userService } from "./services/userService.js";
+import { webRtcLib } from "./services/webrtcService.js";
+import { incomingVideoCallModal } from "./components/incomingVideoCall.js";
 
 let app = document.getElementById("App");
 let isLogin;
@@ -59,6 +61,17 @@ userService.onUserSelectedToCall = () => {
     `Selected: Chatroom`,
     `./chat/${userService.selectedUserToCall.name}`
   );
+};
+
+webRtcLib.onNewIncomingVideoCall = () => {
+  rootDiv.appendChild(incomingVideoCallModal.div);
+  let mdal = new bootstrap.Modal(incomingVideoCallModal.div);
+  mdal.show();
+};
+
+incomingVideoCallModal.onAcceptCall = () => {
+  rootDiv.innerHTML = "";
+  rootDiv.appendChild(chatView);
 };
 
 showLoginPage();
