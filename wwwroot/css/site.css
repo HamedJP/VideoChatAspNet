@@ -1,12 +1,8 @@
 .userContainer {
   display: grid;
-  grid-template-columns: auto 20%;
+  grid-template-columns: auto 45px;
+  /* grid-template-columns: auto 20%; */
 }
-.userContainer {
-  display: grid;
-  grid-template-columns: auto 20%;
-}
-
 .loginPage {
   /* background-color: salmon; */
   width: 320px;
@@ -29,14 +25,18 @@
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
 }
-.callButton {
+.callVideoButton {
   /* background-color: none; */
-  position: absolute;
-  z-index: 1;
+  /* position: absolute; */
+  /* z-index: 1; */
   background: none;
   background-image: url("../images/VideoCall.svg");
+  background-repeat: no-repeat;
+  background-size: contain;
+  /* height: 100%; */
+  /* width: auto; */
   border: none;
-  background-size: cover;
+  /* background-size: 40%; */
 }
 
 .guessViewArea {
@@ -60,7 +60,7 @@
   border-style: solid;
   width: 120px;
   height: 120px;
-  border-radius: 60px;
+  border-radius: 50%;
   border-color: red;
   background-color: red;
   position: absolute;
@@ -163,8 +163,4 @@
   z-index: 2;
   bottom: 60;
   left: 53px;
-}
-
-.callVideoButton {
-  background-image: url("../images/VideoCall.svg");
 }
