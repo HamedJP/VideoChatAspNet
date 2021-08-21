@@ -120,8 +120,10 @@ export let webRtcLib = {
     localConnection.setRemoteDescription(jAnswer).then((e) => {
       console.log(`done in answer`);
       console.log(e);
+      webRtcLib.onCallAccepted();
     });
   },
+
   setNewRemoteIceCandidate(newRemoteIceCandidate) {
     newRemoteIceCandidate = JSON.parse(newRemoteIceCandidate);
     localConnection.addIceCandidate(newRemoteIceCandidate);
@@ -166,6 +168,7 @@ export let webRtcLib = {
   onNewIncomingVideoCall() {},
   onSelfVideoIsReady() {},
   onStreamIncomingVideo() {},
+  onCallAccepted() {},
 };
 
 webRtcLib.itirateCameras();

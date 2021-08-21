@@ -6,7 +6,6 @@ import { loginPage } from "./components/loginPage.js";
 import { userService } from "./services/userService.js";
 import { webRtcLib } from "./services/webrtcService.js";
 import { incomingVideoCallModal } from "./components/incomingVideoCall.js";
-import { videoCallView } from "./components/videoCallView.js";
 
 let app = document.getElementById("App");
 let isLogin;
@@ -72,13 +71,7 @@ webRtcLib.onNewIncomingVideoCall = () => {
 
 incomingVideoCallModal.onAcceptCall = () => {
   rootDiv.innerHTML = "";
-  rootDiv.appendChild(videoCallView);
-};
-
-webRtcLib.onCallAccepted = () => {
-  console.log(`call was accepted`);
-  rootDiv.innerHTML = "";
-  rootDiv.appendChild(videoCallView);
+  rootDiv.appendChild(chatView);
 };
 
 showLoginPage();

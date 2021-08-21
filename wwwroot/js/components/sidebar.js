@@ -1,16 +1,14 @@
 import { userService } from "../services/userService.js";
+import { webRtcLib } from "../services/webrtcService.js";
 
 let selectedUserId = -1;
 
 let sidebarDiv = document.createElement("div");
 
 sidebarDiv.className = "col";
-// sidebarDiv.className = "col d-none d-md-block";
-// sidebarDiv.className = "col-sm d-flex flex-column align-items-stretch flex-shrink-0 bg-white";
-// sidebarDiv.style = "background:yellow";
 
 let title = document.createElement("h2");
-title.textContent = "لیست کابران";
+title.textContent = "Users";
 title.classList =
   "d-flex align-items-center flex-shrink-0 p-3 link-dark text-decoration-none border-bottom";
 
@@ -19,7 +17,6 @@ let usersList = document.createElement("div");
 usersList.classList =
   "list-group list-group-flush border-bottom scrollarea container";
 
-console.log(userService.allUsers);
 showUsersInsidebarDiv(-1);
 
 function showUsersInsidebarDiv() {
@@ -33,6 +30,7 @@ function showUsersInsidebarDiv() {
       p.textContent = `${userService.allUsers[i].name}`;
       p.classList = "col";
       userDiv.appendChild(p);
+      // userDiv.appendChild(videoCallButton);
       if (userDiv.id === selectedUserId) {
         userDiv.classList =
           "list-group-item list-group-item-action py-3 active lh-tight userContainer";

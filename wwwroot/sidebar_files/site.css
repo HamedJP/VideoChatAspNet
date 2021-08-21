@@ -1,8 +1,12 @@
 .userContainer {
   display: grid;
-  grid-template-columns: auto 45px;
-  /* grid-template-columns: auto 20%; */
+  grid-template-columns: auto 20%;
 }
+.userContainer {
+  display: grid;
+  grid-template-columns: auto 20%;
+}
+
 .loginPage {
   /* background-color: salmon; */
   width: 320px;
@@ -24,6 +28,15 @@
   left: 50%;
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
+}
+.callVideoButton {
+  /* background-color: none; */
+  position: absolute;
+  z-index: 1;
+  background: none;
+  background-image: url("../images/VideoCall.svg");
+  border: none;
+  background-size: cover;
 }
 
 .guessViewArea {
@@ -47,7 +60,7 @@
   border-style: solid;
   width: 120px;
   height: 120px;
-  border-radius: 50%;
+  border-radius: 60px;
   border-color: red;
   background-color: red;
   position: absolute;
@@ -59,15 +72,17 @@
 
 .rotateCameraButton {
   z-index: 2;
-  /* left: 53px; */
+  bottom: 260;
+  left: 53px;
   position: absolute;
   margin: 0;
-  bottom: 3%;
+  bottom: 5%;
   left: 20%;
   transform: translate(-50%, -50%);
+  z-index: 2;
   width: 14vw;
   height: 14vw;
-  /* border-radius: 7vw; */
+  border-radius: 7vw;
   border: none;
   background: none;
   background-image: url("../images/cameraRotate.png");
@@ -77,7 +92,7 @@
   bottom: 6%;
   width: 12vw;
   height: 12vw;
-  filter: invert(20%);
+  filter: invert(70%);
 }
 
 .endCallButton {

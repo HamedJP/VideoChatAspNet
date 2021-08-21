@@ -1,0 +1,32 @@
+.chatView {
+  background-color: orangered;
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.callVideoButton {
+  /* background-color: none; */
+  position: absolute;
+  /* z-index: 1; */
+  background: none;
+  background-image: url("../images/VideoCall.svg");
+  background-repeat: no-repeat;
+  background-size: contain;
+  /* height: 30%; */
+  width: 120px;
+  height: 120px;
+  border: none;
+  left: 50%;
+  bottom: 0%;
+  transform: translate(-50%);
+  /* background-size: 40%; */
+}
+
+.callVideoButton:active {
+  width: 100px;
+  height: 100px;
+  bottom: 2%;
+}
