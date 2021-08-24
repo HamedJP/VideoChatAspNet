@@ -57,51 +57,6 @@
   object-fit: cover;
 }
 
-.rotateCameraButton {
-  z-index: 2;
-  /* left: 53px; */
-  position: absolute;
-  margin: 0;
-  bottom: 3%;
-  left: 20%;
-  transform: translate(-50%, -50%);
-  width: 14vw;
-  height: 14vw;
-  /* border-radius: 7vw; */
-  border: none;
-  background: none;
-  background-image: url("../images/cameraRotate.png");
-  background-size: cover;
-}
-.rotateCameraButton:active {
-  bottom: 6%;
-  width: 12vw;
-  height: 12vw;
-  filter: invert(20%);
-}
-
-.endCallButton {
-  position: absolute;
-  margin: 0;
-  bottom: 0%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 2;
-  width: 20vw;
-  height: 20vw;
-  border-radius: 10vw;
-  border: none;
-  background-image: url("../images/endCall.svg");
-  background-size: cover;
-}
-.endCallButton:active {
-  bottom: 2%;
-  width: 16vw;
-  height: 16vw;
-  border-radius: 8vw;
-  filter: grayscale(70%);
-}
-
 .loginPage {
   /* background-color: salmon; */
   width: 320px;

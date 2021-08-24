@@ -1,14 +1,22 @@
-// import { chatView } from "../components/chatView.js";
 import { signalrLib } from "./signalRService.js";
-import { userService } from "./userService.js";
 
-let localConnection; //= new RTCPeerConnection();
 var configuration = {
   offerToReceiveAudio: true,
   offerToReceiveVideo: true,
 };
+let mediaSource;
+
+// let localConnection; //= new RTCPeerConnection({
+let localConnection = new RTCPeerConnection({
+  configuration: configuration,
+  iceServers: [
+    {
+      urls: "stun:stunserver.example.org",
+    },
+  ],
+});
+
 let devices = await navigator.mediaDevices.enumerateDevices();
-console.log(devices);
 
 let cameras = [];
 devices.forEach((d) => {
@@ -17,6 +25,14 @@ devices.forEach((d) => {
 
 // console.log(cameras);
 async function initialLocalConnection() {
+  localConnection = new RTCPeerConnection({
+    configuration: configuration,
+    iceServers: [
+      {
+        urls: "stun:stunserver.example.org",
+      },
+    ],
+  });
   localConnection.onicecandidate = (e) => {
     console.log(`on new ICE candidate!`);
     webRtcLib.localConnectionDescription = JSON.stringify(
@@ -29,14 +45,11 @@ async function initialLocalConnection() {
     console.log("Recieving new track");
     console.log(e.streams[0]);
     console.log(webRtcLib.seflVideoStream);
-    // webRtcLib.incomingVideoSteam = webRtcLib.seflVideoStream;
-    // webRtcLib.onStreamIncomingVideo();
-    // chatView.guessViewArea.srcObject = webRtcLib.incomingVideoSteam;
     webRtcLib.incomingVideoSteam = e.streams[0];
     webRtcLib.onStreamIncomingVideo();
   };
   webRtcLib.seflVideoStream.getTracks().forEach(function (track) {
-    localConnection.addTrack(track, webRtcLib.seflVideoStream);
+    mediaSource = localConnection.addTrack(track, webRtcLib.seflVideoStream);
   });
 
   let sendChannel = localConnection.createDataChannel("sendChannel");
@@ -44,15 +57,21 @@ async function initialLocalConnection() {
   sendChannel.onopen = (e) => {
     console.log("open!!!!");
   };
-  sendChannel.onclose = (e) => console.log("closed!!!!!!");
+  sendChannel.onclose = (e) => {
+    console.log("closed!!!!!!");
+    try {
+      localConnection.removeTrack(mediaSource);
+    } catch (error) {
+      console.log(`Error!`);
+      console.log(error);
+    }
+
+    webRtcLib.onEndingTheCall();
+  };
   localConnection.ondatachannel = (e) => {
-    // console.log(`on data channel event`);
     sendChannel = e.channel;
   };
 }
-// localConnection
-//   .createOffer()
-//   .then((o) => localConnection.setLocalDescription(o));
 
 export let webRtcLib = {
   offer: String,
@@ -63,15 +82,6 @@ export let webRtcLib = {
   incomingVideoSteam: MediaStream,
 
   async createOffer() {
-    localConnection = new RTCPeerConnection({
-      configuration: configuration,
-      iceServers: [
-        {
-          urls: "stun:stunserver.example.org",
-        },
-      ],
-    });
-
     await initialLocalConnection();
     console.log(localConnection);
     localConnection
@@ -86,14 +96,6 @@ export let webRtcLib = {
   },
 
   recieveOffer(offer) {
-    localConnection = new RTCPeerConnection({
-      configuration: configuration,
-      iceServers: [
-        {
-          urls: "stun:stunserver.example.org",
-        },
-      ],
-    });
     initialLocalConnection();
 
     this.isAnswerReady = false;
@@ -129,18 +131,6 @@ export let webRtcLib = {
     localConnection.addIceCandidate(newRemoteIceCandidate);
   },
 
-  sendTestMessage() {
-    // sendChannel.send(
-    //   `Hello from ${userService.currentUser.name} to ${userService.callerUser.name} TO ${userService.recieverUser.name}`
-    // );
-    console.log(this.seflVideoStream.getTracks());
-    this.seflVideoStream.getTracks().forEach((track) => {
-      console.log(track);
-
-      localConnection.addTrack(track);
-    });
-  },
-
   itirateCameras() {
     if (cameras.length > 1) {
       const tmp = cameras[0];
@@ -164,11 +154,17 @@ export let webRtcLib = {
       });
   },
 
+  closeConnection() {
+    localConnection.removeTrack(mediaSource);
+    localConnection.close();
+  },
+
   onOfferIsReady() {},
   onNewIncomingVideoCall() {},
   onSelfVideoIsReady() {},
   onStreamIncomingVideo() {},
   onCallAccepted() {},
+  onEndingTheCall() {},
 };
 
 webRtcLib.itirateCameras();

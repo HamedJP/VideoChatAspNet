@@ -52,7 +52,7 @@ namespace VideochatAspNet
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
 
-            // app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
             app.UseFileServer();
 
             app.UseRouting();

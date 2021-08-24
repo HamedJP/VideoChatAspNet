@@ -6,7 +6,7 @@ mBody.textContent = "BODY";
 
 let acceptButton = document.createElement("button");
 acceptButton.classList = "btn btn-success";
-acceptButton.textContent = "Answer";
+acceptButton.textContent = "Accept";
 acceptButton.setAttribute("data-bs-dismiss", "modal");
 acceptButton.onclick = () => {
   console.log(`accepting the call`);

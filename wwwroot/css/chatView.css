@@ -7,6 +7,52 @@
   width: 100%;
 }
 
+.endCallButton {
+  position: absolute;
+  margin: 0;
+  bottom: 0px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  width: 120px;
+  height: 120px;
+  border-radius: 60px;
+  border: none;
+  background-image: url("../images/endCall.svg");
+  background-size: cover;
+}
+.endCallButton:active {
+  bottom: 20px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50px;
+  filter: grayscale(70%);
+}
+
+.rotateCameraButton {
+  z-index: 2;
+  /* bottom: 260; */
+  left: 53px;
+  position: absolute;
+  margin: 0;
+  bottom: 5%;
+  left: 20%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  width: 70px;
+  height: 70px;
+  border: none;
+  background: none;
+  background-image: url("../images/flipCamera.png");
+  background-size: cover;
+}
+.rotateCameraButton:active {
+  bottom: 7%;
+  width: 60px;
+  height: 60px;
+  filter: invert(70%);
+}
+
 .callVideoButton {
   /* background-color: none; */
   position: absolute;

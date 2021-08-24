@@ -18,7 +18,7 @@ namespace VideochatAspNet.Hubs
 
         public override Task OnConnectedAsync()
         {
-            User newUser = new()
+            User newUser = new User()
             {
                 // Id=Guid.NewGuid().ToString(),
                 ConnectionId = Context.ConnectionId

@@ -51,7 +51,7 @@ window.addEventListener("popstate", (e) => {
 
 userService.onUserLogin = () => {
   showUsersList();
-  history.pushState({ page: "usersList" }, `Selected: Chatroom`, `./room`);
+  history.pushState({ page: "usersList" }, `Selected: Chatroom`, `/room`);
 };
 
 userService.onUserSelectedToCall = () => {
@@ -64,6 +64,11 @@ userService.onUserSelectedToCall = () => {
   );
 };
 
+webRtcLib.onEndingTheCall = () => {
+  showUsersList();
+  history.pushState({ page: "usersList" }, `Selected: Chatroom`, `/room`);
+};
+
 webRtcLib.onNewIncomingVideoCall = () => {
   rootDiv.appendChild(incomingVideoCallModal.div);
   let mdal = new bootstrap.Modal(incomingVideoCallModal.div);
@@ -73,14 +78,23 @@ webRtcLib.onNewIncomingVideoCall = () => {
 incomingVideoCallModal.onAcceptCall = () => {
   rootDiv.innerHTML = "";
   rootDiv.appendChild(videoCallView);
+  history.pushState(
+    { page: "videoCall" },
+    `Selected: Video Call`,
+    `./videoCall`
+  );
 };
 
 webRtcLib.onCallAccepted = () => {
-  console.log(`call was accepted`);
+  history.pushState(
+    { page: "videoCall" },
+    `Selected: Video Call`,
+    `./videoCall`
+  );
   rootDiv.innerHTML = "";
   rootDiv.appendChild(videoCallView);
 };
 
 showLoginPage();
-history.replaceState({ page: "login" }, "Default state", "./");
+history.replaceState({ page: "login" }, "Default state", "/");
 // console.log(app);

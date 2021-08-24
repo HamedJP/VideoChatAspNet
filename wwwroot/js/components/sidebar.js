@@ -40,14 +40,8 @@ function showUsersInsidebarDiv() {
       }
 
       userDiv.onclick = () => {
-        // going to chat view:
+        selectedUserId = userService.selectUserToCall(userDiv.id);
 
-        if (selectedUserId === userDiv.id) {
-          console.log("in sidebar: userService.selectUserToCall(-1)");
-          selectedUserId = userService.selectUserToCall(-1);
-        } else {
-          selectedUserId = userService.selectUserToCall(userDiv.id);
-        }
         showUsersInsidebarDiv();
       };
       usersList.appendChild(userDiv);

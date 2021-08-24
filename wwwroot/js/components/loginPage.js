@@ -14,14 +14,14 @@ form.classList = "modal-content loginForm";
 let userIputDiv = document.createElement("div");
 let userIput = document.createElement("input");
 userIput.type = "text";
-userIput.placeholder = "نام کاربری";
+userIput.placeholder = "Usename";
 userIput.className = "form-control";
 userIputDiv.style = "margin:12px";
 userIputDiv.appendChild(userIput);
 
 let submitDiv = document.createElement("div");
 let submit = document.createElement("button");
-submit.textContent = "ورود";
+submit.textContent = "Login";
 submit.classList = "btn btn-primary";
 submitDiv.style = "margin:12px";
 submitDiv.appendChild(submit);
@@ -34,12 +34,9 @@ rootDiv.appendChild(form);
 form.onsubmit = () => {
   event.preventDefault();
   if (userIput.value !== "") {
-    // userService.uname = userIput.value;
-    // loginPage.onLoginUser();
     userService.loginUser(userIput.value);
   } else {
-    userIput.placeholder = "لطفا یک نام کاربری وارد کنید";
-    userIput.style = "color:red";
+    userIput.placeholder = "please enter a username";
   }
 };
 

@@ -5,9 +5,6 @@ import { webRtcLib } from "../services/webrtcService.js";
 import { signalrLib } from "../services/signalRService.js";
 
 export let videoCallView = document.createElement("div");
-// videoCallView.classList = "col";
-// videoCallView.style = "background:orange;position: absolute;";
-// videoCallView.style = "background:orange;";
 
 let guessViewArea = document.createElement("video");
 guessViewArea.classList = "guessViewArea";
@@ -33,25 +30,11 @@ changeCameraButton.onclick = () => {
 
 let endVideoCallButton = document.createElement("button");
 endVideoCallButton.classList = "endCallButton";
-endVideoCallButton.onclick = () => {};
+endVideoCallButton.onclick = () => {
+  webRtcLib.closeConnection();
+};
 
 videoCallView.appendChild(guessViewArea);
 videoCallView.appendChild(selfViewArea);
 videoCallView.appendChild(changeCameraButton);
 videoCallView.appendChild(endVideoCallButton);
-
-// userService.onUserSelectedToCall = () => {
-// if (userService.selectedUserToCall === null) {
-//   videoCallButton.disabled = true;
-// } else {
-//   videoCallButton.disabled = false;
-// }
-// };
-
-// webRtcLib.onOfferIsReady = () => {
-// console.log("Offer is ready");
-// };
-// webRtcLib.onStreamIncomingVideo = () => {
-//   console.log(`stream the incoming video`);
-//   guessViewArea.srcObject = webRtcLib.incomingVideoSteam;
-// };
