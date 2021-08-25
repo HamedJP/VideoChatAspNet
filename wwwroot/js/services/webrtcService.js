@@ -48,7 +48,10 @@ async function initialLocalConnection() {
     webRtcLib.incomingVideoSteam = e.streams[0];
     webRtcLib.onStreamIncomingVideo();
   };
-  webRtcLib.seflVideoStream.getTracks().forEach(function (track) {
+  console.log(webRtcLib.seflVideoStream);
+  let trackss = await webRtcLib.seflVideoStream.getTracks();
+  console.log(trackss);
+  trackss.forEach(function (track) {
     mediaSource = localConnection.addTrack(track, webRtcLib.seflVideoStream);
   });
 
@@ -80,8 +83,10 @@ export let webRtcLib = {
   localConnectionDescription: String,
   seflVideoStream: MediaStream,
   incomingVideoSteam: MediaStream,
+  cams: [],
 
   async createOffer() {
+    this.cams = cameras;
     await initialLocalConnection();
     console.log(localConnection);
     localConnection
@@ -132,13 +137,6 @@ export let webRtcLib = {
   },
 
   itirateCameras() {
-    if (cameras.length > 1) {
-      const tmp = cameras[0];
-      for (let i = 1; i < cameras.length; i++) {
-        cameras[i - 1] = cameras[i];
-      }
-      cameras[cameras.length - 1] = tmp;
-    }
     navigator.mediaDevices
       .getUserMedia({
         video: {
@@ -152,6 +150,14 @@ export let webRtcLib = {
         webRtcLib.seflVideoStream = stream;
         webRtcLib.onSelfVideoIsReady();
       });
+
+    if (cameras.length > 1) {
+      const tmp = cameras[0];
+      for (let i = 1; i < cameras.length; i++) {
+        cameras[i - 1] = cameras[i];
+      }
+      cameras[cameras.length - 1] = tmp;
+    }
   },
 
   closeConnection() {

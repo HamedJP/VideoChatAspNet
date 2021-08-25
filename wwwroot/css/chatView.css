@@ -11,6 +11,23 @@
   color: white;
   font-weight: bold;
   font-size: 40vw;
+}
+.msg {
+  z-index: 5;
+  font-size: large;
+  color: red;
+  background-color: wheat;
+
+  position: absolute;
+  margin: 0;
+  top: 220px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  width: 420px;
+  height: 120px;
+}
+.callVideoButton {
   position: absolute;
   margin: 5px;
   top: 10px;
