@@ -1,8 +1,9 @@
 import { signalrLib } from "../services/signalRService.js";
+import { userService } from "../services/userService.js";
 
 let mBody = document.createElement("div");
 mBody.className = "modal-body";
-mBody.textContent = "BODY";
+mBody.textContent = "callerUser";
 
 let acceptButton = document.createElement("button");
 acceptButton.classList = "btn btn-success";
@@ -18,6 +19,9 @@ let rejectButton = document.createElement("button");
 rejectButton.classList = "btn btn-danger";
 rejectButton.textContent = "Reject";
 rejectButton.setAttribute("data-bs-dismiss", "modal");
+rejectButton.onclick = () => {
+  signalrLib.rejectCall();
+};
 
 let mFooter = document.createElement("div");
 mFooter.className = "modal-footer";
@@ -43,6 +47,9 @@ console.log(root.dataset);
 root.appendChild(modalDialog);
 
 export let incomingVideoCallModal = {
-  div: root,
+  div() {
+    mBody.textContent = userService.callerUser.name;
+    return root;
+  },
   onAcceptCall() {},
 };

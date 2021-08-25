@@ -85,5 +85,13 @@ namespace VideochatAspNet.Hubs
                 .SendAsync("reciveNewIceCandidate", newIcecandidates);
             }
         }
+
+        public  void RejectCall(string callerUserId, string recieverUserId){
+             var callerUser = users.FirstOrDefault(u => u.Id == callerUserId);
+            if(callerUser!=null){
+                Clients.Client(callerUser.ConnectionId)
+                .SendAsync("callWasRejected", recieverUserId);
+            }
+        }
     }
 }

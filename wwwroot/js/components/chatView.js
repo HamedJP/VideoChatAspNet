@@ -4,26 +4,38 @@ import { userService } from "../services/userService.js";
 import { webRtcLib } from "../services/webrtcService.js";
 import { signalrLib } from "../services/signalRService.js";
 
-export let chatView = document.createElement("div");
-chatView.classList = "col chatView";
-chatView.id = "chatView";
+let div = document.createElement("div");
+
+div.classList = "col chatView";
+div.id = "chatView";
 
 let name = document.createElement("p");
-name.textContent = userService.selectedUserToCall.name;
+name.textContent = "selectedUserToCall";
 name.className = "callUsername";
 
 let videoCallButton = document.createElement("button");
 
 videoCallButton.classList = "callVideoButton col";
 videoCallButton.onclick = () => {
-  console.log(`click the call`);
-  console.log(`calling ${userService.selectedUserToCall.name}`);
   userService.callerUser = userService.currentUser;
   userService.recieverUser = userService.selectedUserToCall;
   userService.otherUser = userService.selectedUserToCall;
   ///////////////////////// signalrLib.sendOfferToServer();
+  div.style = "background-color: orangered;";
   webRtcLib.createOffer();
 };
 
-chatView.appendChild(name);
-chatView.appendChild(videoCallButton);
+div.appendChild(name);
+div.appendChild(videoCallButton);
+
+export function callWasRejected() {
+  name.innerText = "The call was rejected";
+  setTimeout(() => {
+    webRtcLib.onEndingTheCall();
+  }, 5000);
+}
+
+export let chatView = () => {
+  name.textContent = userService.selectedUserToCall.name;
+  return div;
+};

@@ -1,5 +1,6 @@
 "use strict";
 
+import { callWasRejected } from "../components/chatView.js";
 import { userService } from "./userService.js";
 import { webRtcLib } from "./webrtcService.js";
 
@@ -62,9 +63,18 @@ export let signalrLib = {
     );
   },
 
+  rejectCall() {
+    connection.invoke(
+      "RejectCall",
+      userService.callerUser.id,
+      userService.recieverUser.id
+    );
+  },
+
   //-----------------------------------------------------------
   //              Events
   //-----------------------------------------------------------
+  onCallWasRejected() {},
 };
 
 //-----------------------------------------------------------
@@ -106,4 +116,8 @@ connection.on(
 
 connection.on("reciveNewIceCandidate", function (newRemoteIceCandidate) {
   webRtcLib.setNewRemoteIceCandidate(newRemoteIceCandidate);
+});
+
+connection.on("callWasRejected", function (recieverUserId) {
+  callWasRejected();
 });
