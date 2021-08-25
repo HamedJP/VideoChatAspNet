@@ -22,6 +22,13 @@
   width: 420px;
   height: 120px;
 }
+.callVideoButton {
+  position: absolute;
+  margin: 0;
+  top: 0px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 
 .endCallButton {
   position: absolute;

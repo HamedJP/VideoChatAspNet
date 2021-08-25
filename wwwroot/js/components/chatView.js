@@ -8,6 +8,10 @@ export let chatView = document.createElement("div");
 chatView.classList = "col chatView";
 chatView.id = "chatView";
 
+let name = document.createElement("p");
+name.textContent = userService.selectedUserToCall.name;
+name.className = "callUsername";
+
 let videoCallButton = document.createElement("button");
 
 videoCallButton.classList = "callVideoButton col";
@@ -21,4 +25,5 @@ videoCallButton.onclick = () => {
   webRtcLib.createOffer();
 };
 
+// chatView.appendChild(name);
 chatView.appendChild(videoCallButton);
