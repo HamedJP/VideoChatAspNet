@@ -25,5 +25,5 @@ videoCallButton.onclick = () => {
   webRtcLib.createOffer();
 };
 
-// chatView.appendChild(name);
+chatView.appendChild(name);
 chatView.appendChild(videoCallButton);
