@@ -7,9 +7,12 @@
 }
 
 .callUsername {
-  color: white;
+  color: blue;
   font-weight: bold;
-  font-size: 40vw;
+  font-size: 25px;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%);
 }
 .msg {
   z-index: 5;
@@ -29,7 +32,7 @@
 .callVideoButton {
   position: absolute;
   margin: 5px;
-  top: 10px;
+  bottom: 10px;
   left: 50%;
   transform: translate(-50%, -50%);
 }

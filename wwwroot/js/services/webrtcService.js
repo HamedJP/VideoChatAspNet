@@ -41,16 +41,18 @@ async function initialLocalConnection() {
     // webRtcLib.onOfferIsReady();
     signalrLib.sendNewIceToServer(JSON.stringify(e.candidate));
   };
+
   localConnection.ontrack = (e) => {
     console.log("Recieving new track");
+    console.log(e.streams);
     console.log(e.streams[0]);
-    console.log(webRtcLib.seflVideoStream);
+    // console.log(webRtcLib.seflVideoStream);
     webRtcLib.incomingVideoSteam = e.streams[0];
     webRtcLib.onStreamIncomingVideo();
   };
-  console.log(webRtcLib.seflVideoStream);
+  // console.log(webRtcLib.seflVideoStream);
   let trackss = await webRtcLib.seflVideoStream.getTracks();
-  console.log(trackss);
+  // console.log(trackss);
   trackss.forEach(function (track) {
     mediaSource = localConnection.addTrack(track, webRtcLib.seflVideoStream);
   });
@@ -59,6 +61,12 @@ async function initialLocalConnection() {
   sendChannel.onmessage = (e) => console.log("messsage received!!!" + e.data);
   sendChannel.onopen = (e) => {
     console.log("open!!!!");
+    let screenSize = {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    };
+    console.log(JSON.stringify(screenSize));
+    sendChannel.send(JSON.stringify(screenSize));
   };
   sendChannel.onclose = (e) => {
     console.log("closed!!!!!!");
@@ -68,6 +76,9 @@ async function initialLocalConnection() {
       console.log(`Error!`);
       console.log(error);
     }
+    // sendChannel.onmessage = (e) => {
+    //   console.log(`on message!!!`);
+    // };
 
     webRtcLib.onEndingTheCall();
   };
@@ -136,11 +147,20 @@ export let webRtcLib = {
     localConnection.addIceCandidate(newRemoteIceCandidate);
   },
 
-  itirateCameras() {
+  getMedia() {
     navigator.mediaDevices
       .getUserMedia({
         video: {
           deviceId: cameras[0].deviceId,
+          width: {
+            max: "640",
+          },
+          height: {
+            max: "480",
+          },
+          frameRate: {
+            max: "30",
+          },
         },
         audio: false,
       })
@@ -148,9 +168,12 @@ export let webRtcLib = {
         console.log(`stream selfi: `);
         console.log(stream);
         webRtcLib.seflVideoStream = stream;
+
         webRtcLib.onSelfVideoIsReady();
       });
+  },
 
+  async itirateCameras() {
     if (cameras.length > 1) {
       const tmp = cameras[0];
       for (let i = 1; i < cameras.length; i++) {
@@ -158,6 +181,14 @@ export let webRtcLib = {
       }
       cameras[cameras.length - 1] = tmp;
     }
+    this.getMedia();
+    localConnection.removeTrack(mediaSource);
+
+    let trackss = await webRtcLib.seflVideoStream.getTracks();
+    trackss.forEach(function (track) {
+      mediaSource = localConnection.addTrack(track, webRtcLib.seflVideoStream);
+    });
+    webRtcLib.onSelfVideoIsReady();
   },
 
   closeConnection() {
@@ -173,4 +204,4 @@ export let webRtcLib = {
   onEndingTheCall() {},
 };
 
-webRtcLib.itirateCameras();
+webRtcLib.getMedia();

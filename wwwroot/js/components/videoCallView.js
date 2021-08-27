@@ -30,6 +30,8 @@ changeCameraButton.classList = "rotateCameraButton";
 changeCameraButton.onclick = () => {
   msg.textContent = `Cameers: ${webRtcLib.cams.length}\n${webRtcLib.cams[0]}\n${webRtcLib.cams[1]}`;
   webRtcLib.itirateCameras();
+  selfViewArea.srcObject = webRtcLib.seflVideoStream;
+  selfViewArea.play();
 };
 
 let endVideoCallButton = document.createElement("button");
@@ -40,6 +42,6 @@ endVideoCallButton.onclick = () => {
 
 videoCallView.appendChild(guessViewArea);
 videoCallView.appendChild(selfViewArea);
-videoCallView.appendChild(msg);
+// videoCallView.appendChild(msg);
 videoCallView.appendChild(changeCameraButton);
 videoCallView.appendChild(endVideoCallButton);
