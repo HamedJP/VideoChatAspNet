@@ -4,7 +4,7 @@ var configuration = {
   offerToReceiveAudio: true,
   offerToReceiveVideo: true,
 };
-let mediaSource;
+let mediaSource = new RTCRtpSender();
 
 // let localConnection; //= new RTCPeerConnection({
 let localConnection = new RTCPeerConnection({
@@ -147,7 +147,8 @@ export let webRtcLib = {
     localConnection.addIceCandidate(newRemoteIceCandidate);
   },
 
-  getMedia() {
+  async getMedia() {
+    webRtcLib.seflVideoStream = null;
     navigator.mediaDevices
       .getUserMedia({
         video: {
@@ -181,12 +182,12 @@ export let webRtcLib = {
       }
       cameras[cameras.length - 1] = tmp;
     }
-    this.getMedia();
-    localConnection.removeTrack(mediaSource);
+    await this.getMedia();
+    // localConnection.removeTrack(mediaSource);
 
     let trackss = await webRtcLib.seflVideoStream.getTracks();
     trackss.forEach(function (track) {
-      mediaSource = localConnection.addTrack(track, webRtcLib.seflVideoStream);
+      mediaSource.replaceTrack(track); // = localConnection.addTrack(track, webRtcLib.seflVideoStream);
     });
     webRtcLib.onSelfVideoIsReady();
   },
