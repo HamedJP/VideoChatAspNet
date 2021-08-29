@@ -4,7 +4,7 @@ var configuration = {
   offerToReceiveAudio: true,
   offerToReceiveVideo: true,
 };
-let mediaSource = new RTCRtpSender();
+let mediaSource; //= new RTCRtpSender();
 
 // let localConnection; //= new RTCPeerConnection({
 let localConnection = new RTCPeerConnection({

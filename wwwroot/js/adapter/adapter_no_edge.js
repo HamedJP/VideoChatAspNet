@@ -96,6 +96,10 @@
 
           var chromeShim = _interopRequireWildcard(_chrome_shim);
 
+          var _edge_shim = require("./edge/edge_shim");
+
+          var edgeShim = _interopRequireWildcard(_edge_shim);
+
           var _firefox_shim = require("./firefox/firefox_shim");
 
           var firefoxShim = _interopRequireWildcard(_firefox_shim);
@@ -107,10 +111,6 @@
           var _common_shim = require("./common_shim");
 
           var commonShim = _interopRequireWildcard(_common_shim);
-
-          var _sdp = require("sdp");
-
-          var sdp = _interopRequireWildcard(_sdp);
 
           function _interopRequireWildcard(obj) {
             if (obj && obj.__esModule) {
@@ -149,6 +149,7 @@
                 : {
                     shimChrome: true,
                     shimFirefox: true,
+                    shimEdge: true,
                     shimSafari: true,
                   };
 
@@ -162,8 +163,6 @@
               extractVersion: utils.extractVersion,
               disableLog: utils.disableLog,
               disableWarnings: utils.disableWarnings,
-              // Expose sdp as a convenience. For production apps include directly.
-              sdp: sdp,
             };
 
             // Shim browser if found.
@@ -191,10 +190,6 @@
 
                 // Must be called before shimPeerConnection.
                 commonShim.shimAddIceCandidateNullOrEmpty(
-                  window,
-                  browserDetails
-                );
-                commonShim.shimParameterlessSetLocalDescription(
                   window,
                   browserDetails
                 );
@@ -235,10 +230,6 @@
                   window,
                   browserDetails
                 );
-                commonShim.shimParameterlessSetLocalDescription(
-                  window,
-                  browserDetails
-                );
 
                 firefoxShim.shimGetUserMedia(window, browserDetails);
                 firefoxShim.shimPeerConnection(window, browserDetails);
@@ -257,6 +248,31 @@
                 commonShim.shimMaxMessageSize(window, browserDetails);
                 commonShim.shimSendThrowTypeError(window, browserDetails);
                 break;
+              case "edge":
+                if (
+                  !edgeShim ||
+                  !edgeShim.shimPeerConnection ||
+                  !options.shimEdge
+                ) {
+                  logging(
+                    "MS edge shim is not included in this adapter release."
+                  );
+                  return adapter;
+                }
+                logging("adapter.js shimming edge.");
+                // Export to the adapter global object visible in the browser.
+                adapter.browserShim = edgeShim;
+
+                edgeShim.shimGetUserMedia(window, browserDetails);
+                edgeShim.shimGetDisplayMedia(window, browserDetails);
+                edgeShim.shimPeerConnection(window, browserDetails);
+                edgeShim.shimReplaceTrack(window, browserDetails);
+
+                // the edge shim implements the full RTCIceCandidate object.
+
+                commonShim.shimMaxMessageSize(window, browserDetails);
+                commonShim.shimSendThrowTypeError(window, browserDetails);
+                break;
               case "safari":
                 if (!safariShim || !options.shimSafari) {
                   logging(
@@ -270,10 +286,6 @@
 
                 // Must be called before shimCallbackAPI.
                 commonShim.shimAddIceCandidateNullOrEmpty(
-                  window,
-                  browserDetails
-                );
-                commonShim.shimParameterlessSetLocalDescription(
                   window,
                   browserDetails
                 );
@@ -305,10 +317,10 @@
         {
           "./chrome/chrome_shim": 3,
           "./common_shim": 6,
+          "./edge/edge_shim": 12,
           "./firefox/firefox_shim": 7,
           "./safari/safari_shim": 10,
           "./utils": 11,
-          sdp: 12,
         },
       ],
       3: [
@@ -1707,8 +1719,6 @@
           exports.removeExtmapAllowMixed = removeExtmapAllowMixed;
           exports.shimAddIceCandidateNullOrEmpty =
             shimAddIceCandidateNullOrEmpty;
-          exports.shimParameterlessSetLocalDescription =
-            shimParameterlessSetLocalDescription;
 
           var _sdp = require("sdp");
 
@@ -2200,74 +2210,8 @@
                 return nativeAddIceCandidate.apply(this, arguments);
               };
           }
-
-          // Note: Make sure to call this ahead of APIs that modify
-          // setLocalDescription.length
-          function shimParameterlessSetLocalDescription(
-            window,
-            browserDetails
-          ) {
-            if (
-              !(window.RTCPeerConnection && window.RTCPeerConnection.prototype)
-            ) {
-              return;
-            }
-            var nativeSetLocalDescription =
-              window.RTCPeerConnection.prototype.setLocalDescription;
-            if (
-              !nativeSetLocalDescription ||
-              nativeSetLocalDescription.length === 0
-            ) {
-              return;
-            }
-            window.RTCPeerConnection.prototype.setLocalDescription =
-              function setLocalDescription() {
-                var _this = this;
-
-                var desc = arguments[0] || {};
-                if (
-                  (typeof desc === "undefined"
-                    ? "undefined"
-                    : _typeof(desc)) !== "object" ||
-                  (desc.type && desc.sdp)
-                ) {
-                  return nativeSetLocalDescription.apply(this, arguments);
-                }
-                // The remaining steps should technically happen when SLD comes off the
-                // RTCPeerConnection's operations chain (not ahead of going on it), but
-                // this is too difficult to shim. Instead, this shim only covers the
-                // common case where the operations chain is empty. This is imperfect, but
-                // should cover many cases. Rationale: Even if we can't reduce the glare
-                // window to zero on imperfect implementations, there's value in tapping
-                // into the perfect negotiation pattern that several browsers support.
-                desc = { type: desc.type, sdp: desc.sdp };
-                if (!desc.type) {
-                  switch (this.signalingState) {
-                    case "stable":
-                    case "have-local-offer":
-                    case "have-remote-pranswer":
-                      desc.type = "offer";
-                      break;
-                    default:
-                      desc.type = "answer";
-                      break;
-                  }
-                }
-                if (
-                  desc.sdp ||
-                  (desc.type !== "offer" && desc.type !== "answer")
-                ) {
-                  return nativeSetLocalDescription.apply(this, [desc]);
-                }
-                var func =
-                  desc.type === "offer" ? this.createOffer : this.createAnswer;
-                return func.apply(this).then(function (d) {
-                  return nativeSetLocalDescription.apply(_this, [d]);
-                });
-              };
-          }
         },
-        { "./utils": 11, sdp: 12 },
+        { "./utils": 11, sdp: 13 },
       ],
       7: [
         function (require, module, exports) {
@@ -3732,6 +3676,17 @@
                 2
               );
             } else if (
+              navigator.mediaDevices &&
+              navigator.userAgent.match(/Edge\/(\d+).(\d+)$/)
+            ) {
+              // Edge.
+              result.browser = "edge";
+              result.version = extractVersion(
+                navigator.userAgent,
+                /Edge\/(\d+).(\d+)$/,
+                2
+              );
+            } else if (
               window.RTCPeerConnection &&
               navigator.userAgent.match(/AppleWebKit\/(\d+)\./)
             ) {
@@ -3836,27 +3791,13 @@
         },
         {},
       ],
-      12: [
+      12: [function (require, module, exports) {}, {}],
+      13: [
         function (require, module, exports) {
           /* eslint-env node */
           "use strict";
 
           // SDP helpers.
-
-          var _typeof =
-            typeof Symbol === "function" && typeof Symbol.iterator === "symbol"
-              ? function (obj) {
-                  return typeof obj;
-                }
-              : function (obj) {
-                  return obj &&
-                    typeof Symbol === "function" &&
-                    obj.constructor === Symbol &&
-                    obj !== Symbol.prototype
-                    ? "symbol"
-                    : typeof obj;
-                };
-
           var SDPUtils = {};
 
           // Generate an alphanumeric identifier for cname or mids.
@@ -3885,13 +3826,13 @@
             });
           };
 
-          // Returns the session description.
+          // returns the session description.
           SDPUtils.getDescription = function (blob) {
             var sections = SDPUtils.splitSections(blob);
             return sections && sections[0];
           };
 
-          // Returns the individual media sections.
+          // returns the individual media sections.
           SDPUtils.getMediaSections = function (blob) {
             var sections = SDPUtils.splitSections(blob);
             sections.shift();
@@ -3908,9 +3849,8 @@
           // Parses an ICE candidate line. Sample input:
           // candidate:702786350 2 udp 41819902 8.8.8.8 60769 typ relay raddr 8.8.8.8
           // rport 55996"
-          // Input can be prefixed with a=.
           SDPUtils.parseCandidate = function (line) {
-            var parts = void 0;
+            var parts;
             // Parse both variants.
             if (line.indexOf("a=candidate:") === 0) {
               parts = line.substring(12).split(" ");
@@ -3920,7 +3860,7 @@
 
             var candidate = {
               foundation: parts[0],
-              component: { 1: "rtp", 2: "rtcp" }[parts[1]] || parts[1],
+              component: parseInt(parts[1], 10),
               protocol: parts[2].toLowerCase(),
               priority: parseInt(parts[3], 10),
               ip: parts[4],
@@ -3942,14 +3882,12 @@
                   candidate.tcpType = parts[i + 1];
                   break;
                 case "ufrag":
-                  candidate.ufrag = parts[i + 1]; // for backward compatibility.
+                  candidate.ufrag = parts[i + 1]; // for backward compability.
                   candidate.usernameFragment = parts[i + 1];
                   break;
                 default:
-                  // extension handling, in particular ufrag. Don't overwrite.
-                  if (candidate[parts[i]] === undefined) {
-                    candidate[parts[i]] = parts[i + 1];
-                  }
+                  // extension handling, in particular ufrag
+                  candidate[parts[i]] = parts[i + 1];
                   break;
               }
             }
@@ -3957,19 +3895,10 @@
           };
 
           // Translates a candidate object into SDP candidate attribute.
-          // This does not include the a= prefix!
           SDPUtils.writeCandidate = function (candidate) {
             var sdp = [];
             sdp.push(candidate.foundation);
-
-            var component = candidate.component;
-            if (component === "rtp") {
-              sdp.push(1);
-            } else if (component === "rtcp") {
-              sdp.push(2);
-            } else {
-              sdp.push(component);
-            }
+            sdp.push(candidate.component);
             sdp.push(candidate.protocol.toUpperCase());
             sdp.push(candidate.priority);
             sdp.push(candidate.address || candidate.ip);
@@ -4003,13 +3932,12 @@
           };
 
           // Parses an ice-options line, returns an array of option tags.
-          // Sample input:
           // a=ice-options:foo bar
           SDPUtils.parseIceOptions = function (line) {
             return line.substr(14).split(" ");
           };
 
-          // Parses a rtpmap line, returns RTCRtpCoddecParameters. Sample input:
+          // Parses an rtpmap line, returns RTCRtpCoddecParameters. Sample input:
           // a=rtpmap:111 opus/48000/2
           SDPUtils.parseRtpMap = function (line) {
             var parts = line.substr(9).split(" ");
@@ -4027,7 +3955,7 @@
             return parsed;
           };
 
-          // Generates a rtpmap line from RTCRtpCodecCapability or
+          // Generate an a=rtpmap line from RTCRtpCodecCapability or
           // RTCRtpCodecParameters.
           SDPUtils.writeRtpMap = function (codec) {
             var pt = codec.payloadType;
@@ -4047,7 +3975,7 @@
             );
           };
 
-          // Parses a extmap line (headerextension from RFC 5285). Sample input:
+          // Parses an a=extmap line (headerextension from RFC 5285). Sample input:
           // a=extmap:2 urn:ietf:params:rtp-hdrext:toffset
           // a=extmap:2/sendonly urn:ietf:params:rtp-hdrext:toffset
           SDPUtils.parseExtmap = function (line) {
@@ -4060,7 +3988,7 @@
             };
           };
 
-          // Generates an extmap line from RTCRtpHeaderExtensionParameters or
+          // Generates a=extmap line from RTCRtpHeaderExtensionParameters or
           // RTCRtpHeaderExtension.
           SDPUtils.writeExtmap = function (headerExtension) {
             return (
@@ -4076,12 +4004,12 @@
             );
           };
 
-          // Parses a fmtp line, returns dictionary. Sample input:
+          // Parses an ftmp line, returns dictionary. Sample input:
           // a=fmtp:96 vbr=on;cng=on
           // Also deals with vbr=on; cng=on
           SDPUtils.parseFmtp = function (line) {
             var parsed = {};
-            var kv = void 0;
+            var kv;
             var parts = line.substr(line.indexOf(" ") + 1).split(";");
             for (var j = 0; j < parts.length; j++) {
               kv = parts[j].trim().split("=");
@@ -4090,7 +4018,7 @@
             return parsed;
           };
 
-          // Generates a fmtp line from RTCRtpCodecCapability or RTCRtpCodecParameters.
+          // Generates an a=ftmp line from RTCRtpCodecCapability or RTCRtpCodecParameters.
           SDPUtils.writeFmtp = function (codec) {
             var line = "";
             var pt = codec.payloadType;
@@ -4100,7 +4028,7 @@
             if (codec.parameters && Object.keys(codec.parameters).length) {
               var params = [];
               Object.keys(codec.parameters).forEach(function (param) {
-                if (codec.parameters[param] !== undefined) {
+                if (codec.parameters[param]) {
                   params.push(param + "=" + codec.parameters[param]);
                 } else {
                   params.push(param);
@@ -4111,7 +4039,7 @@
             return line;
           };
 
-          // Parses a rtcp-fb line, returns RTCPRtcpFeedback object. Sample input:
+          // Parses an rtcp-fb line, returns RTCPRtcpFeedback object. Sample input:
           // a=rtcp-fb:98 nack rpsi
           SDPUtils.parseRtcpFb = function (line) {
             var parts = line.substr(line.indexOf(" ") + 1).split(" ");
@@ -4120,7 +4048,6 @@
               parameter: parts.join(" "),
             };
           };
-
           // Generate a=rtcp-fb lines from RTCRtpCodecCapability or RTCRtpCodecParameters.
           SDPUtils.writeRtcpFb = function (codec) {
             var lines = "";
@@ -4145,7 +4072,7 @@
             return lines;
           };
 
-          // Parses a RFC 5576 ssrc media attribute. Sample input:
+          // Parses an RFC 5576 ssrc media attribute. Sample input:
           // a=ssrc:3735928559 cname:something
           SDPUtils.parseSsrcMedia = function (line) {
             var sp = line.indexOf(" ");
@@ -4162,8 +4089,6 @@
             return parts;
           };
 
-          // Parse a ssrc-group line (see RFC 5576). Sample input:
-          // a=ssrc-group:semantics 12 34
           SDPUtils.parseSsrcGroup = function (line) {
             var parts = line.substr(13).split(" ");
             return {
@@ -4175,7 +4100,7 @@
           };
 
           // Extracts the MID (RFC 5888) from a media section.
-          // Returns the MID or undefined if no mid line was found.
+          // returns the MID or undefined if no mid line was found.
           SDPUtils.getMid = function (mediaSection) {
             var mid = SDPUtils.matchPrefix(mediaSection, "a=mid:")[0];
             if (mid) {
@@ -4183,12 +4108,11 @@
             }
           };
 
-          // Parses a fingerprint line for DTLS-SRTP.
           SDPUtils.parseFingerprint = function (line) {
             var parts = line.substr(14).split(" ");
             return {
               algorithm: parts[0].toLowerCase(), // algorithm is case-sensitive in Edge.
-              value: parts[1].toUpperCase(), // the definition is upper-case in RFC 4572.
+              value: parts[1],
             };
           };
 
@@ -4200,7 +4124,8 @@
               mediaSection + sessionpart,
               "a=fingerprint:"
             );
-            // Note: a=setup line is ignored since we use the 'auto' role in Edge.
+            // Note: a=setup line is ignored since we use the 'auto' role.
+            // Note2: 'algorithm' is not case sensitive except in Edge.
             return {
               role: "auto",
               fingerprints: lines.map(SDPUtils.parseFingerprint),
@@ -4235,7 +4160,7 @@
               " " +
               parameters.cryptoSuite +
               " " +
-              (_typeof(parameters.keyParams) === "object"
+              (typeof parameters.keyParams === "object"
                 ? SDPUtils.writeCryptoKeyParams(parameters.keyParams)
                 : parameters.keyParams) +
               (parameters.sessionParams
@@ -4273,7 +4198,7 @@
             );
           };
 
-          // Extracts all SDES parameters.
+          // Extracts all SDES paramters.
           SDPUtils.getCryptoParameters = function (mediaSection, sessionpart) {
             var lines = SDPUtils.matchPrefix(
               mediaSection + sessionpart,
@@ -4305,17 +4230,14 @@
 
           // Serializes ICE parameters to SDP.
           SDPUtils.writeIceParameters = function (params) {
-            var sdp =
+            return (
               "a=ice-ufrag:" +
               params.usernameFragment +
               "\r\n" +
               "a=ice-pwd:" +
               params.password +
-              "\r\n";
-            if (params.iceLite) {
-              sdp += "a=ice-lite\r\n";
-            }
-            return sdp;
+              "\r\n"
+            );
           };
 
           // Parses the SDP media section and returns RTCRtpParameters.
@@ -4408,6 +4330,7 @@
             if (maxptime > 0) {
               sdp += "a=maxptime:" + maxptime + "\r\n";
             }
+            sdp += "a=rtcp-mux\r\n";
 
             if (caps.headerExtensions) {
               caps.headerExtensions.forEach(function (extension) {
@@ -4435,7 +4358,7 @@
                 return parts.attribute === "cname";
               });
             var primarySsrc = ssrcs.length > 0 && ssrcs[0].ssrc;
-            var secondarySsrc = void 0;
+            var secondarySsrc;
 
             var flows = SDPUtils.matchPrefix(
               mediaSection,
@@ -4504,7 +4427,7 @@
           SDPUtils.parseRtcpParameters = function (mediaSection) {
             var rtcpParameters = {};
 
-            // Gets the first SSRC. Note that with RTX there might be multiple
+            // Gets the first SSRC. Note tha with RTX there might be multiple
             // SSRCs.
             var remoteSsrc = SDPUtils.matchPrefix(mediaSection, "a=ssrc:")
               .map(function (line) {
@@ -4532,29 +4455,10 @@
             return rtcpParameters;
           };
 
-          SDPUtils.writeRtcpParameters = function (rtcpParameters) {
-            var sdp = "";
-            if (rtcpParameters.reducedSize) {
-              sdp += "a=rtcp-rsize\r\n";
-            }
-            if (rtcpParameters.mux) {
-              sdp += "a=rtcp-mux\r\n";
-            }
-            if (rtcpParameters.ssrc !== undefined && rtcpParameters.cname) {
-              sdp +=
-                "a=ssrc:" +
-                rtcpParameters.ssrc +
-                " cname:" +
-                rtcpParameters.cname +
-                "\r\n";
-            }
-            return sdp;
-          };
-
           // parses either a=msid: or a=ssrc:... msid lines and returns
           // the id of the MediaStream and MediaStreamTrack.
           SDPUtils.parseMsid = function (mediaSection) {
-            var parts = void 0;
+            var parts;
             var spec = SDPUtils.matchPrefix(mediaSection, "a=msid:");
             if (spec.length === 1) {
               parts = spec[0].substr(7).split(" ");
@@ -4582,7 +4486,7 @@
               mediaSection,
               "a=max-message-size:"
             );
-            var maxMessageSize = void 0;
+            var maxMessageSize;
             if (maxSizeLine.length > 0) {
               maxMessageSize = parseInt(maxSizeLine[0].substr(19), 10);
             }
@@ -4599,7 +4503,9 @@
             }
             var sctpMapLines = SDPUtils.matchPrefix(mediaSection, "a=sctpmap:");
             if (sctpMapLines.length > 0) {
-              var parts = sctpMapLines[0].substr(10).split(" ");
+              var parts = SDPUtils.matchPrefix(mediaSection, "a=sctpmap:")[0]
+                .substr(10)
+                .split(" ");
               return {
                 port: parseInt(parts[0], 10),
                 protocol: parts[1],
@@ -4654,7 +4560,7 @@
             return Math.random().toString().substr(2, 21);
           };
 
-          // Write boiler plate for start of SDP
+          // Write boilder plate for start of SDP
           // sessId argument is optional - if not supplied it will
           // be generated randomly
           // sessVersion is optional and defaults to 2
@@ -4664,7 +4570,7 @@
             sessVer,
             sessUser
           ) {
-            var sessionId = void 0;
+            var sessionId;
             var version = sessVer !== undefined ? sessVer : 2;
             if (sessId) {
               sessionId = sessId;
@@ -4685,6 +4591,90 @@
               "s=-\r\n" +
               "t=0 0\r\n"
             );
+          };
+
+          SDPUtils.writeMediaSection = function (
+            transceiver,
+            caps,
+            type,
+            stream
+          ) {
+            var sdp = SDPUtils.writeRtpDescription(transceiver.kind, caps);
+
+            // Map ICE parameters (ufrag, pwd) to SDP.
+            sdp += SDPUtils.writeIceParameters(
+              transceiver.iceGatherer.getLocalParameters()
+            );
+
+            // Map DTLS parameters to SDP.
+            sdp += SDPUtils.writeDtlsParameters(
+              transceiver.dtlsTransport.getLocalParameters(),
+              type === "offer" ? "actpass" : "active"
+            );
+
+            sdp += "a=mid:" + transceiver.mid + "\r\n";
+
+            if (transceiver.direction) {
+              sdp += "a=" + transceiver.direction + "\r\n";
+            } else if (transceiver.rtpSender && transceiver.rtpReceiver) {
+              sdp += "a=sendrecv\r\n";
+            } else if (transceiver.rtpSender) {
+              sdp += "a=sendonly\r\n";
+            } else if (transceiver.rtpReceiver) {
+              sdp += "a=recvonly\r\n";
+            } else {
+              sdp += "a=inactive\r\n";
+            }
+
+            if (transceiver.rtpSender) {
+              // spec.
+              var msid =
+                "msid:" +
+                stream.id +
+                " " +
+                transceiver.rtpSender.track.id +
+                "\r\n";
+              sdp += "a=" + msid;
+
+              // for Chrome.
+              sdp +=
+                "a=ssrc:" +
+                transceiver.sendEncodingParameters[0].ssrc +
+                " " +
+                msid;
+              if (transceiver.sendEncodingParameters[0].rtx) {
+                sdp +=
+                  "a=ssrc:" +
+                  transceiver.sendEncodingParameters[0].rtx.ssrc +
+                  " " +
+                  msid;
+                sdp +=
+                  "a=ssrc-group:FID " +
+                  transceiver.sendEncodingParameters[0].ssrc +
+                  " " +
+                  transceiver.sendEncodingParameters[0].rtx.ssrc +
+                  "\r\n";
+              }
+            }
+            // FIXME: this should be written by writeRtpDescription.
+            sdp +=
+              "a=ssrc:" +
+              transceiver.sendEncodingParameters[0].ssrc +
+              " cname:" +
+              SDPUtils.localCName +
+              "\r\n";
+            if (
+              transceiver.rtpSender &&
+              transceiver.sendEncodingParameters[0].rtx
+            ) {
+              sdp +=
+                "a=ssrc:" +
+                transceiver.sendEncodingParameters[0].rtx.ssrc +
+                " cname:" +
+                SDPUtils.localCName +
+                "\r\n";
+            }
+            return sdp;
           };
 
           // Gets the direction from the mediaSection or the sessionpart.
@@ -4758,10 +4748,7 @@
           };
 
           // Expose public methods.
-          if (
-            (typeof module === "undefined" ? "undefined" : _typeof(module)) ===
-            "object"
-          ) {
+          if (typeof module === "object") {
             module.exports = SDPUtils;
           }
         },
