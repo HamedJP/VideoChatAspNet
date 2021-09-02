@@ -34,7 +34,6 @@ async function initialLocalConnection() {
     ],
   });
   localConnection.onicecandidate = (e) => {
-    console.log(`on new ICE candidate!`);
     webRtcLib.localConnectionDescription = JSON.stringify(
       localConnection.localDescription
     );
@@ -76,9 +75,6 @@ async function initialLocalConnection() {
       console.log(`Error!`);
       console.log(error);
     }
-    // sendChannel.onmessage = (e) => {
-    //   console.log(`on message!!!`);
-    // };
 
     webRtcLib.onEndingTheCall();
   };
@@ -148,7 +144,8 @@ export let webRtcLib = {
   },
 
   async getMedia() {
-    webRtcLib.seflVideoStream = null;
+    // webRtcLib.seflVideoStream = null;
+    console.log(`streaming device: ${cameras[0].deviceId}`);
     navigator.mediaDevices
       .getUserMedia({
         video: {
@@ -182,14 +179,17 @@ export let webRtcLib = {
       }
       cameras[cameras.length - 1] = tmp;
     }
-    await this.getMedia();
-    // localConnection.removeTrack(mediaSource);
 
-    let trackss = await webRtcLib.seflVideoStream.getTracks();
-    trackss.forEach(function (track) {
-      mediaSource.replaceTrack(track); // = localConnection.addTrack(track, webRtcLib.seflVideoStream);
+    const tracks = webRtcLib.seflVideoStream.getTracks();
+    tracks.forEach((track) => track.stop());
+
+    this.getMedia().then(async () => {
+      let trackss = await webRtcLib.seflVideoStream.getTracks();
+      trackss.forEach(function (track) {
+        mediaSource.replaceTrack(track); // = localConnection.addTrack(track, webRtcLib.seflVideoStream);
+      });
+      // webRtcLib.onSelfVideoIsReady();
     });
-    webRtcLib.onSelfVideoIsReady();
   },
 
   closeConnection() {
