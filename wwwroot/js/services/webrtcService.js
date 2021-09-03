@@ -172,6 +172,7 @@ export let webRtcLib = {
       cameras[cameras.length - 1] = tmp;
     }
     this.stopTracks();
+    localConnection.removeTrack(mediaSource);
     console.log(webRtcLib.seflVideoStream.getTracks()[0].id);
     this.getMedia().then(async () => {
       console.log(webRtcLib.seflVideoStream.getTracks()[0].id);
@@ -179,7 +180,8 @@ export let webRtcLib = {
     let trackss = await webRtcLib.seflVideoStream.getTracks();
     trackss.forEach(function (track) {
       console.log(`replace tracks`);
-      mediaSource.replaceTrack(track); // = localConnection.addTrack(track, webRtcLib.seflVideoStream);
+      // mediaSource.replaceTrack(track); // = localConnection.addTrack(track, webRtcLib.seflVideoStream);
+      mediaSource = localConnection.addTrack(track, webRtcLib.seflVideoStream);
     });
     // webRtcLib.onSelfVideoIsReady();
     //});
