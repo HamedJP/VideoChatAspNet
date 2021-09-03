@@ -37,7 +37,6 @@ async function initialLocalConnection() {
     webRtcLib.localConnectionDescription = JSON.stringify(
       localConnection.localDescription
     );
-    // webRtcLib.onOfferIsReady();
     signalrLib.sendNewIceToServer(JSON.stringify(e.candidate));
   };
 
@@ -45,14 +44,12 @@ async function initialLocalConnection() {
     console.log("Recieving new track");
     console.log(e.streams);
     console.log(e.streams[0]);
-    // console.log(webRtcLib.seflVideoStream);
     webRtcLib.incomingVideoSteam = e.streams[0];
     webRtcLib.onStreamIncomingVideo();
   };
-  // console.log(webRtcLib.seflVideoStream);
   let trackss = await webRtcLib.seflVideoStream.getTracks();
-  // console.log(trackss);
   trackss.forEach(function (track) {
+    console.log(`adding track ...`);
     mediaSource = localConnection.addTrack(track, webRtcLib.seflVideoStream);
   });
 
@@ -60,15 +57,10 @@ async function initialLocalConnection() {
   sendChannel.onmessage = (e) => console.log("messsage received!!!" + e.data);
   sendChannel.onopen = (e) => {
     console.log("open!!!!");
-    let screenSize = {
-      width: window.innerWidth,
-      height: window.innerHeight,
-    };
-    console.log(JSON.stringify(screenSize));
-    sendChannel.send(JSON.stringify(screenSize));
   };
   sendChannel.onclose = (e) => {
     console.log("closed!!!!!!");
+
     try {
       localConnection.removeTrack(mediaSource);
     } catch (error) {
@@ -107,12 +99,12 @@ export let webRtcLib = {
       });
   },
 
-  recieveOffer(offer) {
-    initialLocalConnection();
+  async recieveOffer(offer) {
+    await initialLocalConnection();
 
     this.isAnswerReady = false;
     console.log(`Recieve offer from server`);
-    console.log(offer);
+    // console.log(offer);
     this.offer = JSON.parse(offer);
     localConnection
       .setRemoteDescription(this.offer)
@@ -130,10 +122,10 @@ export let webRtcLib = {
   recieveAnswer(answer) {
     let jAnswer = JSON.parse(answer);
     console.log(`Answer recieved`);
-    console.log(answer);
+    // console.log(answer);
     localConnection.setRemoteDescription(jAnswer).then((e) => {
       console.log(`done in answer`);
-      console.log(e);
+      // console.log(e);
       webRtcLib.onCallAccepted();
     });
   },
@@ -157,7 +149,7 @@ export let webRtcLib = {
             max: "480",
           },
           frameRate: {
-            max: "30",
+            max: "24",
           },
         },
         audio: false,
@@ -179,20 +171,32 @@ export let webRtcLib = {
       }
       cameras[cameras.length - 1] = tmp;
     }
-
-    const tracks = webRtcLib.seflVideoStream.getTracks();
-    tracks.forEach((track) => track.stop());
-
+    this.stopTracks();
+    console.log(webRtcLib.seflVideoStream.getTracks()[0].id);
     this.getMedia().then(async () => {
-      let trackss = await webRtcLib.seflVideoStream.getTracks();
-      trackss.forEach(function (track) {
-        mediaSource.replaceTrack(track); // = localConnection.addTrack(track, webRtcLib.seflVideoStream);
-      });
-      // webRtcLib.onSelfVideoIsReady();
+      console.log(webRtcLib.seflVideoStream.getTracks()[0].id);
+    });
+    let trackss = await webRtcLib.seflVideoStream.getTracks();
+    trackss.forEach(function (track) {
+      console.log(`replace tracks`);
+      mediaSource.replaceTrack(track); // = localConnection.addTrack(track, webRtcLib.seflVideoStream);
+    });
+    // webRtcLib.onSelfVideoIsReady();
+    //});
+  },
+
+  stopTracks() {
+    // console.log(`stopping tracks...`);
+    const tracks = webRtcLib.seflVideoStream.getTracks();
+    tracks.forEach((track) => {
+      console.log(`1--------------${track.enabled}`);
+      track.stop();
+      console.log(`2--------------${track.enabled}`);
     });
   },
 
   closeConnection() {
+    // this.stopTracks();
     localConnection.removeTrack(mediaSource);
     localConnection.close();
   },
