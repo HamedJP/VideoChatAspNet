@@ -137,7 +137,7 @@ export let webRtcLib = {
 
   async getMedia() {
     // webRtcLib.seflVideoStream = null;
-    console.log(`streaming device: ${cameras[0].deviceId}`);
+    // console.log(`streaming device: ${cameras[0].deviceId}`);
     navigator.mediaDevices
       .getUserMedia({
         video: {
@@ -155,7 +155,7 @@ export let webRtcLib = {
         audio: false,
       })
       .then((stream) => {
-        console.log(`stream selfi: `);
+        // console.log(`stream selfi: `);
         console.log(stream);
         webRtcLib.seflVideoStream = stream;
 
@@ -171,8 +171,9 @@ export let webRtcLib = {
       }
       cameras[cameras.length - 1] = tmp;
     }
-    this.stopTracks();
     localConnection.removeTrack(mediaSource);
+    console.log(mediaSource);
+    this.stopTracks();
     console.log(webRtcLib.seflVideoStream.getTracks()[0].id);
     this.getMedia().then(async () => {
       console.log(webRtcLib.seflVideoStream.getTracks()[0].id);
@@ -182,7 +183,9 @@ export let webRtcLib = {
       console.log(`replace tracks`);
       // mediaSource.replaceTrack(track); // = localConnection.addTrack(track, webRtcLib.seflVideoStream);
       mediaSource = localConnection.addTrack(track, webRtcLib.seflVideoStream);
+      console.log(mediaSource);
     });
+
     // webRtcLib.onSelfVideoIsReady();
     //});
   },
@@ -191,9 +194,7 @@ export let webRtcLib = {
     // console.log(`stopping tracks...`);
     const tracks = webRtcLib.seflVideoStream.getTracks();
     tracks.forEach((track) => {
-      console.log(`1--------------${track.enabled}`);
       track.stop();
-      console.log(`2--------------${track.enabled}`);
     });
   },
 
