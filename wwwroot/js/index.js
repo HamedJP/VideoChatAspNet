@@ -42,7 +42,7 @@ window.addEventListener("popstate", (e) => {
         break;
       }
       rootDiv.innerHTML = "";
-      rootDiv.appendChild(chatView());
+      rootDiv.appendChild(chatView.div());
       break;
     default:
       break;
@@ -56,11 +56,11 @@ userService.onUserLogin = () => {
 
 userService.onUserSelectedToCall = () => {
   rootDiv.innerHTML = "";
-  rootDiv.appendChild(chatView());
+  rootDiv.appendChild(chatView.div());
   history.pushState(
     { page: "chatPage" },
     `Selected: Chatroom`,
-    `./chat/${userService.selectedUserToCall.name}`
+    `/chat/${userService.selectedUserToCall.name}`
   );
 };
 
@@ -91,6 +91,7 @@ webRtcLib.onCallAccepted = () => {
     `Selected: Video Call`,
     `./videoCall`
   );
+  chatView.backToNormal();
   rootDiv.innerHTML = "";
   rootDiv.appendChild(videoCallView);
 };

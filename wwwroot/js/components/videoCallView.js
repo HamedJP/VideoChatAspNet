@@ -41,5 +41,5 @@ endVideoCallButton.onclick = () => {
 videoCallView.appendChild(guessViewArea);
 videoCallView.appendChild(selfViewArea);
 // videoCallView.appendChild(msg);
-videoCallView.appendChild(changeCameraButton);
+// videoCallView.appendChild(changeCameraButton);
 videoCallView.appendChild(endVideoCallButton);

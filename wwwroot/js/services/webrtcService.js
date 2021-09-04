@@ -148,11 +148,8 @@ export let webRtcLib = {
           height: {
             max: "480",
           },
-          frameRate: {
-            max: "24",
-          },
         },
-        audio: false,
+        audio: true,
       })
       .then((stream) => {
         // console.log(`stream selfi: `);

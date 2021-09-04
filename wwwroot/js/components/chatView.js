@@ -35,7 +35,12 @@ export function callWasRejected() {
   }, 5000);
 }
 
-export let chatView = () => {
-  name.textContent = userService.selectedUserToCall.name;
-  return div;
+export let chatView = {
+  div() {
+    name.textContent = userService.selectedUserToCall.name;
+    return div;
+  },
+  backToNormal() {
+    div.style = "background-color: none;";
+  },
 };

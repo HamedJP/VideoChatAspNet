@@ -39,7 +39,6 @@ modalDialog.appendChild(mContent);
 
 let root = document.createElement("div");
 root.className = "modal fade";
-console.log(`-------------dataset-------------`);
 root.setAttribute("data-bs-backdrop", "static");
 root.setAttribute("data-bs-keyboard", "false");
 
@@ -48,7 +47,7 @@ root.appendChild(modalDialog);
 
 export let incomingVideoCallModal = {
   div() {
-    mBody.textContent = userService.callerUser.name;
+    mBody.textContent = `${userService.callerUser.name} requested a video call`;
     return root;
   },
   onAcceptCall() {},
